@@ -1,7 +1,7 @@
 (function(){
 'use strict';
 /* Catalogo Brasil Homens: app offline para tablet. Dados em localStorage + IndexedDB (somente no aparelho). */
-var APP_VERSION='2.0 (teste)';
+var APP_VERSION='2.2 (teste)';
 var MAXPAD=5;
 var SECURE=false; /* true = bloqueia captura de tela. Fica false no teste para poder tirar prints. */
 var IDLE_MS=150000;

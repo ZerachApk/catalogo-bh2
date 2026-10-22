@@ -1,0 +1,7 @@
+{
+  "appId": "com.brasilhomens.catalogo",
+  "appName": "Catalogo BH",
+  "webDir": "www",
+  "backgroundColor": "#0a0a0b",
+  "android": { "allowMixedContent": false }
+}

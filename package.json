@@ -1,0 +1,11 @@
+{
+  "name": "catalogo-brasil-homens",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Catalogo de ternos Brasil Homens (uso interno, offline)",
+  "dependencies": {
+    "@capacitor/android": "7.4.3",
+    "@capacitor/cli": "7.4.3",
+    "@capacitor/core": "7.4.3"
+  }
+}

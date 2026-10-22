@@ -55,8 +55,12 @@ img,video{max-width:100%}
 .ghost:hover{border-color:var(--text)}
 
 #view-shop{position:relative;overflow:hidden}
-.stage{position:relative;display:grid;grid-template-columns:104px minmax(0,1fr) 380px;gap:36px;align-items:start;padding-block:28px 24px}
-.rail{display:flex;flex-direction:column;gap:14px}
+.stage{position:relative;display:grid;grid-template-columns:216px minmax(0,1fr) 380px;gap:36px;align-items:start;padding-block:28px 24px}
+.rail{display:grid;grid-template-columns:repeat(3,64px);gap:10px;align-content:start;max-height:calc(100vh - 120px);overflow-y:auto;position:sticky;top:96px;padding:2px 6px 8px 2px;scrollbar-width:thin}
+.rail .thumb{width:64px;gap:0}.rail .timg{width:64px;height:84px;border-radius:9px}
+.padstrip{width:100%;display:flex;flex-direction:column;gap:8px;align-items:center}
+.padstrip .label{letter-spacing:.2em;text-transform:uppercase;font-size:12px;color:var(--gold);font-weight:700}
+.padstrip .row{display:flex;flex-wrap:wrap;justify-content:center;gap:12px}
 .media{min-width:0;display:flex;flex-direction:column;align-items:center;gap:14px}
 .info{display:flex;flex-direction:column;gap:24px;min-width:0}
 .thumb{display:flex;flex-direction:column;align-items:center;gap:6px;width:92px;opacity:.78}
@@ -184,12 +188,12 @@ footer button{min-height:52px;padding:0 6px;font-size:13px;letter-spacing:.08em;
 .toast{position:fixed;left:50%;transform:translateX(-50%);bottom:max(20px,env(safe-area-inset-bottom,0px));z-index:70;max-width:min(92vw,520px);padding:14px 22px;border-radius:999px;background:var(--gold);color:#111;font-size:15px;font-weight:600;text-align:center;box-shadow:0 8px 30px rgba(0,0,0,.5)}
 
 @media (max-width:1100px){
-  .stage{grid-template-columns:104px minmax(0,1fr);gap:28px}
+  .stage{grid-template-columns:216px minmax(0,1fr);gap:28px}
   .info{grid-column:1 / -1}
 }
 @media (max-width:760px){
   .stage{grid-template-columns:minmax(0,1fr)}
-  .rail{flex-direction:row;overflow-x:auto;padding-bottom:6px;order:2}
+  .rail{display:flex;flex-direction:row;overflow-x:auto;overflow-y:visible;max-height:none;position:static;padding-bottom:6px;order:2}
   .media{order:1}.info{order:3}
   .form{grid-template-columns:minmax(0,1fr)}
   .row2{grid-template-columns:1fr}
@@ -253,6 +257,10 @@ input,select{user-select:text;-webkit-user-select:text}
           <output id="vtime">0:00 / 0:08</output>
         </div>
       </div>
+      <div class="padstrip" id="padbox" hidden>
+        <span class="label">Terno dos padrinhos</span>
+        <div class="row" id="padpick" role="group" aria-label="Terno dos padrinhos"></div>
+      </div>
     </div>
 
     <aside class="info">
@@ -261,20 +269,6 @@ input,select{user-select:text;-webkit-user-select:text}
         <h1 class="title" id="title"></h1>
         <p class="sub" id="sub"></p>
       </div>
-      <div class="pad-box" id="padbox" hidden>
-        <div class="block" style="gap:22px">
-          <div class="block" style="gap:12px">
-            <h3>Terno do noivo</h3>
-            <p class="note">Qualquer modelo do catálogo.</p>
-            <div class="row" id="groompick" role="group" aria-label="Terno do noivo"></div>
-          </div>
-          <div class="block" style="gap:12px">
-            <h3>Terno dos padrinhos</h3>
-            <p class="note">Todos os padrinhos na mesma cor, entre os modelos separados para eles.</p>
-            <div class="row" id="padpick" role="group" aria-label="Terno dos padrinhos"></div>
-          </div>
-        </div>
-      </div>
       <div class="actions">
         <button class="cta" data-act="togroup" id="btn-group">Ver noivo + padrinhos</button>
         <button class="ghost" data-act="addcmp">Comparar com outro terno</button>
@@ -282,13 +276,6 @@ input,select{user-select:text;-webkit-user-select:text}
     </aside>
   </div>
 
-  <div class="wrap cat">
-    <div class="cat-head">
-      <h2>Todos os ternos</h2>
-      <span class="label" id="cat-note"></span>
-    </div>
-    <div class="grid" id="grid"></div>
-  </div>
 </section>
 
 <section id="view-compare" hidden>

@@ -1,7 +1,7 @@
 (function(){
 'use strict';
 /* Catalogo Brasil Homens: app offline para tablet. Dados em localStorage + IndexedDB (somente no aparelho). */
-var APP_VERSION='1.9 (teste)';
+var APP_VERSION='2.0 (teste)';
 var MAXPAD=5;
 var SECURE=false; /* true = bloqueia captura de tela. Fica false no teste para poder tirar prints. */
 var IDLE_MS=150000;
@@ -326,7 +326,6 @@ function setMedia(){
   var pb=$('#padbox');pb.hidden=!isG;
   if(isG){
     ensurePad();
-    $('#groompick').innerHTML=products.map(function(q){return '<button class="thumb sm" data-act="pid" data-pid="'+q.id+'" aria-pressed="'+(q.id===S.pid)+'" aria-label="Noivo com o terno '+esc(q.name)+'"><span class="timg"><img src="'+q.photo+'" alt="" loading="lazy"></span><span class="tname">'+esc(q.name)+'</span></button>';}).join('');
     $('#padpick').innerHTML=padList().map(function(q){return '<button class="thumb sm" data-act="padpid" data-pid="'+q.id+'" aria-pressed="'+(q.id===S.pad)+'" aria-label="Padrinhos com o terno '+esc(q.name)+'"><span class="timg"><img src="'+q.photo+'" alt="" loading="lazy"></span><span class="tname">'+esc(q.name)+'</span></button>';}).join('');
   }
 }
@@ -334,16 +333,14 @@ function renderShop(){
   if(!products.length){$('#title').textContent='Sem ternos';return;}
   var p=byId(S.pid);
   setMedia();
-  $('#rail').innerHTML=products.map(function(q){
-    return '<button class="thumb" data-act="pid" data-pid="'+q.id+'" aria-pressed="'+(q.id===S.pid)+'" aria-label="'+esc(q.name)+'"><span class="timg"><img src="'+q.photo+'" alt="" loading="lazy"></span><span class="tname">'+esc(q.name)+'</span></button>';
+  var rl=$('#rail'),rst=rl.scrollTop;
+  rl.innerHTML=products.map(function(q){
+    return '<button class="thumb" data-act="pid" data-pid="'+q.id+'" title="'+esc(q.name)+'" aria-pressed="'+(q.id===S.pid)+'" aria-label="'+esc(q.name)+'"><span class="timg"><img src="'+q.photo+'" alt="" loading="lazy"></span></button>';
   }).join('');
+  rl.scrollTop=rst;
   $('#eyebrow').textContent=S.mode==='grupo'?'Noivo e padrinhos':'Locação e venda de trajes';
   $('#title').innerHTML=(S.mode==='grupo'?'Noivo<em>'+esc(p.name)+'</em>':'Terno<em>'+esc(p.name)+'</em>');
   $('#sub').textContent=S.mode==='grupo'?'Veja como o noivo e os padrinhos ficam juntos na mesma foto.':p.desc+' Valores de locação e venda na loja.';
-  $('#grid').innerHTML=products.map(function(q){
-    return '<button class="card" data-act="pickcard" data-pid="'+q.id+'" aria-pressed="'+(q.id===S.pid)+'"><span class="cimg"><img src="'+q.photo+'" alt="Terno '+esc(q.name)+'" loading="lazy"></span><span class="cn">'+esc(q.name)+'</span><span class="cm">'+esc(q.pieces)+(q.video?' · com vídeo':'')+'</span></button>';
-  }).join('');
-  $('#cat-note').textContent=products.length+' modelos';
 }
 function syncVideoUI(){
   var d=vid.duration||8;vrange.value=Math.round((vid.currentTime/d)*1000);

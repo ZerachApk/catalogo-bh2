@@ -221,6 +221,74 @@ input,select{user-select:text;-webkit-user-select:text}
 .mactions{display:flex;flex-wrap:wrap;gap:10px;justify-content:space-between}
 .mactions .mini{flex:1 1 140px}
 .reccode{font-family:var(--sans);font-weight:800;font-size:40px;letter-spacing:.14em;text-align:center;padding:18px 8px;border-radius:12px;background:var(--bg2);border:1px dashed var(--gold);color:var(--gold);user-select:text;-webkit-user-select:text}
+
+/* ===== v3: sem catalogo, foto/video em tela cheia ===== */
+html,body{height:100%}
+body{overflow:hidden}
+body.is-staff{overflow:auto}
+.top{position:relative;height:64px;padding-top:env(safe-area-inset-top,0px);box-sizing:content-box}
+.top .wrap{height:64px;padding-block:0;flex-wrap:nowrap;max-width:none}
+.logo b{width:40px;height:40px;font-size:17px}
+.modebar{margin:0;padding:3px;border-radius:12px}
+.modebar button{min-height:46px;padding:0 20px;font-size:15px}
+main{height:calc(100vh - 64px);height:calc(100dvh - 64px - env(safe-area-inset-top,0px))}
+body.is-staff main{height:auto}
+#view-shop{position:relative;height:100%;overflow:hidden;background:#000}
+.vw{position:absolute;inset:0;overflow:hidden;background:#000;touch-action:pan-y;user-select:none;-webkit-user-select:none}
+.vw .bd{position:absolute;inset:-6%;width:112%;height:112%;object-fit:cover;filter:blur(34px) brightness(.55) saturate(1.15);pointer-events:none}
+.vw .vimg{position:absolute;left:0;top:0;width:100%;height:100%;object-fit:contain;object-position:50% 50%;display:block;transition:transform .35s ease;pointer-events:none}
+.vw.zoom .vimg{transform:scale(2.2)}
+.vw video.vimg{pointer-events:none}
+.nb{position:absolute;top:50%;transform:translateY(-50%);width:68px;height:68px;border-radius:50%;background:rgba(0,0,0,.55);border:1.5px solid rgba(255,255,255,.35);display:grid;place-items:center;z-index:5;color:#fff}
+.nb:active{background:rgba(201,173,125,.85);color:#111}
+.nb svg{width:30px;height:30px}
+.nb.prev{left:max(14px,env(safe-area-inset-left,0px))}
+.nb.next{right:max(14px,env(safe-area-inset-right,0px))}
+.cap{position:absolute;left:50%;transform:translateX(-50%);bottom:16px;display:flex;flex-wrap:wrap;align-items:baseline;justify-content:center;gap:2px 12px;max-width:min(92%,640px);padding:10px 22px;border-radius:18px;background:rgba(0,0,0,.62);border:1px solid rgba(255,255,255,.14);z-index:4;pointer-events:none;text-align:center}
+.cap b{font-family:var(--serif);font-size:30px;font-weight:600;color:var(--gold);line-height:1}
+.cap span{font-family:var(--serif);font-size:26px;font-weight:600;line-height:1.1}
+.cap small{flex-basis:100%;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:#d2d0cb}
+.cap em{flex-basis:100%;font-size:12px;font-style:normal;color:#ffd79a}
+.gw{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:8px;padding:8px max(16px,env(safe-area-inset-left,0px)) 6px;background:radial-gradient(900px 500px at 50% 0,rgba(201,173,125,.12),transparent 70%),#050506;overflow:hidden}
+.gstage{position:relative;display:flex;align-items:center;justify-content:center;width:100%;flex:1 1 auto;min-height:0}
+.gframe{position:relative;aspect-ratio:16/9;width:min(100%,calc((100vh - 64px - 270px)*16/9));max-height:100%;border-radius:16px;overflow:hidden;background:#0c0c0d;border:1px solid var(--line)}
+.gframe canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+.gframe .tag{position:absolute;bottom:10px;padding:4px 10px;border-radius:999px;background:rgba(0,0,0,.66);border:1px solid rgba(255,255,255,.16);font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;white-space:nowrap}
+.gframe .tg{right:12px}.gframe .tp{left:12px}
+.gmsg{margin:0;padding:96px 24px;text-align:center;color:var(--muted)}
+.gstage .nb{width:58px;height:58px}
+.gpick{flex:none;width:100%;max-width:1180px;display:flex;flex-direction:column;gap:6px}
+.grow{display:flex;align-items:center;gap:10px;min-width:0}
+.grow>.label{flex:none;width:92px;font-size:11px;letter-spacing:.16em;color:var(--gold)}
+.grow .items{display:flex;flex-wrap:wrap;gap:6px;min-width:0}
+.pill{display:inline-flex;align-items:center;gap:8px;min-height:40px;padding:0 14px 0 10px;border-radius:999px;border:1.5px solid var(--line2);background:#0e0e10;font-size:13px;font-weight:600;color:#d8d6d1;white-space:nowrap}
+.pill i{width:18px;height:18px;border-radius:50%;border:1px solid rgba(255,255,255,.35);flex:none}
+.pill[aria-pressed="true"]{border-color:var(--gold);background:#1d1a14;color:#fff}
+.pill.fm{min-height:36px;font-size:12px;padding:0 12px 0 8px}
+.pill.fm i{width:15px;height:15px}
+.gt{position:relative;width:62px;height:84px;border-radius:8px;overflow:hidden;border:2px solid var(--line);opacity:.85;flex:none}
+.gt img{width:100%;height:100%;object-fit:cover;object-position:50% 0;display:block}
+.gt b{position:absolute;left:0;right:0;bottom:0;background:rgba(0,0,0,.72);font-size:8.5px;line-height:10px;font-weight:600;text-align:center;padding:2px 2px 3px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.gt[aria-pressed="true"]{border-color:var(--gold);opacity:1}
+.gcap{display:flex;flex-wrap:wrap;gap:0 10px;align-items:baseline}
+.gcap b{font-family:var(--serif);font-size:22px;color:var(--gold)}
+.gcap span{font-family:var(--serif);font-size:20px;font-weight:600}
+.gcap small{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--dim)}
+@media (max-width:760px){
+  .top .wrap{gap:8px;padding-inline:10px}
+  .logo span{display:none}
+  .modebar button{padding:0 10px;font-size:13px}
+  .nb{width:54px;height:54px}
+}
+.gw{position:absolute;inset:0;display:block;overflow-y:auto;padding:0;background:var(--bg)}
+.gw .stage{padding-block:22px 18px}
+.gw .rail{max-height:calc(100vh - 64px - 44px)}
+.gw .frame.group{width:min(100%,calc((100vh - 64px - 230px)*16/9))}
+.gw .grp{position:absolute;inset:0;overflow:hidden;background:#0c0c0d}
+.gw .grp .tag{position:absolute;bottom:12px;padding:5px 10px;border-radius:999px;background:rgba(0,0,0,.66);border:1px solid rgba(255,255,255,.16);font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;z-index:6;white-space:nowrap}
+.gw .grp .tg{right:14px}.gw .grp .tp{left:14px}
+.gw .grp canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+.gw .rail .thumb .timg{position:relative}
 </style>
 </head>
 <body>
@@ -229,72 +297,46 @@ input,select{user-select:text;-webkit-user-select:text}
 <header class="top">
   <div class="wrap">
     <button class="logo" data-act="logo" aria-label="Brasil Homens"><b>BH</b><span><span>Brasil</span><span>Homens</span></span></button>
-    <nav class="nav" aria-label="Principal">
-      <button data-act="nav" data-view="shop" id="nav-shop">Catálogo</button>
-      <button data-act="nav" data-view="compare" id="nav-compare">Comparar</button>
-    </nav>
+    <div class="modebar" id="modebar" role="group" aria-label="Como ver o terno">
+      <button data-act="mode" data-mode="foto" id="m-foto" aria-pressed="true">Foto</button>
+      <button data-act="mode" data-mode="video" id="m-video" aria-pressed="false">Vídeo</button>
+      <button data-act="mode" data-mode="grupo" id="m-grupo" aria-pressed="false">Noivo + padrinhos</button>
+    </div>
+    <span style="width:40px" aria-hidden="true"></span>
   </div>
 </header>
 
 <main>
 <section id="view-shop">
-  <div class="wrap stage">
-    <div class="rail" id="rail" role="group" aria-label="Escolher a cor do terno"></div>
-
-    <div class="media">
-      <div class="modebar" role="group" aria-label="Como ver o terno">
-        <button data-act="mode" data-mode="foto" id="m-foto" aria-pressed="true">Foto</button>
-        <button data-act="mode" data-mode="video" id="m-video" aria-pressed="false">Vídeo</button>
-        <button data-act="mode" data-mode="grupo" id="m-grupo" aria-pressed="false">Noivo + padrinhos</button>
-      </div>
-      <div class="frame" id="frame">
-        <img id="photo" alt="" decoding="async">
-        <video id="vid" muted loop playsinline preload="metadata" hidden></video>
-        <div class="grp" id="grp" hidden></div>
-        <span class="hint" id="hint">Toque para ampliar o tecido</span>
-        <div class="vctl" id="vctl" hidden>
-          <button id="vplay" aria-label="Pausar vídeo"></button>
-          <input type="range" id="vrange" min="0" max="1000" value="0" aria-label="Posição do vídeo">
-          <output id="vtime">0:00 / 0:08</output>
+  <div class="vw" id="vw">
+    <img class="bd" id="bd" alt="" aria-hidden="true">
+    <img class="vimg" id="photo" alt="" decoding="async">
+    <video class="vimg" id="vid" muted loop playsinline autoplay preload="auto" disablepictureinpicture disableremoteplayback controlslist="nodownload nofullscreen noremoteplayback" hidden></video>
+    <button class="nb prev" data-act="prev" aria-label="Terno anterior"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 4 7 12 15 20"/></svg></button>
+    <button class="nb next" data-act="next" aria-label="Próximo terno"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 4 17 12 9 20"/></svg></button>
+    <div class="cap" id="cap"></div>
+  </div>
+  <div class="gw" id="gw" hidden>
+    <div class="wrap stage">
+      <div class="rail" id="rail" role="group" aria-label="Escolher a cor do terno do noivo"></div>
+      <div class="media">
+        <div class="frame group"><div class="grp" id="grp"></div></div>
+        <div class="padstrip">
+          <span class="label">Terno dos padrinhos</span>
+          <div class="row" id="padpick" role="group" aria-label="Terno dos padrinhos"></div>
         </div>
       </div>
-      <div class="padstrip" id="padbox" hidden>
-        <span class="label">Terno dos padrinhos</span>
-        <div class="row" id="padpick" role="group" aria-label="Terno dos padrinhos"></div>
-      </div>
+      <aside class="info">
+        <div class="block" style="gap:14px">
+          <span class="eyebrow">Noivo e padrinhos</span>
+          <h1 class="title" id="title"></h1>
+          <p class="sub">Veja como o noivo e os padrinhos ficam juntos na mesma foto.</p>
+        </div>
+        <div class="actions">
+          <button class="cta" data-act="mode" data-mode="foto">Ver o terno sozinho</button>
+        </div>
+      </aside>
     </div>
-
-    <aside class="info">
-      <div class="block" style="gap:14px">
-        <span class="eyebrow" id="eyebrow">Locação e venda de trajes</span>
-        <h1 class="title" id="title"></h1>
-        <p class="sub" id="sub"></p>
-      </div>
-      <div class="actions">
-        <button class="cta" data-act="togroup" id="btn-group">Ver noivo + padrinhos</button>
-        <button class="ghost" data-act="addcmp">Comparar com outro terno</button>
-      </div>
-    </aside>
-  </div>
-
-</section>
-
-<section id="view-compare" hidden>
-  <div class="wrap">
-    <div class="cmp-head">
-      <span class="eyebrow">Comparação lado a lado</span>
-      <h1>Qual combina <em>mais com você?</em></h1>
-    </div>
-    <div class="toolbar">
-      <div class="seg" role="group" aria-label="Foto ou vídeo">
-        <button data-act="cmode" data-mode="foto" id="cm-foto" aria-pressed="true">Foto</button>
-        <button data-act="cmode" data-mode="video" id="cm-video" aria-pressed="false">Vídeo</button>
-      </div>
-      <button class="ghost" id="cplay" data-act="cplay" hidden style="min-height:52px">Pausar os dois</button>
-      <div class="rng" id="crng" hidden><span class="label">Arrastar</span><input type="range" id="crange" min="0" max="1000" value="0" aria-label="Posição dos dois vídeos"></div>
-    </div>
-    <div class="cmp" id="cmp"></div>
-    <div class="ctable"><table><thead><tr><th>Comparativo</th><th>Terno A</th><th>Terno B</th></tr></thead><tbody id="cmp-rows"></tbody></table></div>
   </div>
 </section>
 
@@ -303,11 +345,6 @@ input,select{user-select:text;-webkit-user-select:text}
 </section>
 </main>
 
-<footer>
-  <div class="wrap">
-    <span>BRASIL HOMENS · JOINVILLE, SC · TERNOS FEITOS NA MÃO</span>
-  </div>
-</footer>
 <div class="toast" id="toast" role="status" hidden></div>
 <div class="modal-back" id="modal" hidden><div class="modal" role="dialog" aria-modal="true"><div id="mbody"></div></div></div>
 

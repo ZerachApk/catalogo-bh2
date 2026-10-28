@@ -1,7 +1,7 @@
 (function(){
 'use strict';
 /* Catalogo Brasil Homens: app offline para tablet. Dados em localStorage + IndexedDB (somente no aparelho). */
-var APP_VERSION='2.2 (teste)';
+var APP_VERSION='3.0 (teste)';
 var MAXPAD=5;
 var SECURE=false; /* true = bloqueia captura de tela. Fica false no teste para poder tirar prints. */
 var IDLE_MS=150000;
@@ -141,84 +141,88 @@ function disableKiosk(){if(!Kiosk)return Promise.resolve(null);return Kiosk.disa
 function kioskStatus(){if(!Kiosk)return Promise.resolve(null);return Kiosk.status().catch(function(){return null;});}
 
 /* ---------- catalogo ---------- */
+var FAMS=["Branco", "Bege", "Amarelo", "Rosé", "Vinho", "Verde", "Petróleo", "Azul claro", "Azul médio", "Azul royal", "Azul-marinho", "Cinza claro", "Cinza", "Grafite", "Preto"];
 var BUILTIN=[
- {id:'azul-royal',cut:'media/cut-azul-royal.webp',name:'Azul-royal',pieces:'3 peças',desc:'Paletó, colete e calça em azul vivo. Lapela de ponta clássica.',hex:'#2e5fa3',photo:'media/azul-royal.jpg',video:'media/azul-royal.mp4',bg:'hall',pad:false},
- {id:'azul-smoking',cut:'media/cut-azul-smoking.webp',name:'Azul-royal com lapela preta',pieces:'3 peças',desc:'Paletó, colete e calça em azul com lapela de cetim preta.',hex:'#33609c',photo:'media/azul-smoking.jpg',video:'media/azul-smoking.mp4',bg:'hall',pad:false},
- {id:'branco-jacquard',cut:'media/cut-branco-jacquard.webp',name:'Branco jacquard',pieces:'3 peças',desc:'Paletó, colete e calça em jacquard branco com lapela preta.',hex:'#e9e6e0',photo:'media/branco-jacquard.jpg',video:'media/branco-jacquard.mp4',bg:'stage',pad:false},
- {id:'areia',cut:'media/cut-areia.webp',name:'Areia',pieces:'3 peças',desc:'Paletó, colete e calça em tom areia, tecido leve.',hex:'#d9cdb4',photo:'media/areia.jpg',video:'media/areia.mp4',bg:'stage',pad:false},
- {id:'mostarda',cut:'media/cut-mostarda.webp',name:'Mostarda',pieces:'3 peças',desc:'Paletó, colete trespassado e calça em mostarda, botões em tom prata.',hex:'#c28a1a',photo:'media/mostarda.jpg',video:'media/mostarda.mp4',bg:'stage',pad:false},
- {id:'amarelo-ouro',cut:'media/cut-amarelo-ouro.webp',name:'Amarelo-ouro',pieces:'3 peças',desc:'Paletó, colete trespassado e calça em amarelo-ouro.',hex:'#d9a92a',photo:'media/amarelo-ouro.jpg',video:'media/amarelo-ouro.mp4',bg:'stage',pad:false},
- {id:'caramelo',cut:'media/cut-caramelo.webp',name:'Caramelo',pieces:'3 peças',desc:'Paletó, colete e calça em linho caramelo, botões marrons.',hex:'#b58b57',photo:'media/caramelo.jpg',video:'media/caramelo.mp4',bg:'stage',pad:false},
- {id:'taupe',cut:'media/cut-taupe.webp',name:'Taupe',pieces:'3 peças',desc:'Paletó, colete e calça em linho taupe.',hex:'#b39a84',photo:'media/taupe.jpg',video:'media/taupe.mp4',bg:'stage',pad:false},
- {id:'bege-trespassado',cut:'media/cut-bege-trespassado.webp',name:'Bege trespassado',pieces:'3 peças',desc:'Paletó, colete trespassado e calça em bege claro.',hex:'#dccfb6',photo:'media/bege-trespassado.jpg',video:'media/bege-trespassado.mp4',bg:'stage',pad:false},
- {id:'champanhe',cut:'media/cut-champanhe.webp',name:'Champanhe',pieces:'3 peças',desc:'Paletó, colete e calça em champanhe, botões no mesmo tom.',hex:'#ddd0b8',photo:'media/champanhe.jpg',video:'media/champanhe.mp4',bg:'stage',pad:false},
- {id:'marinho-cetim',cut:'media/cut-marinho-cetim.webp',name:'Azul-marinho com lapela de cetim',pieces:'3 peças',desc:'Paletó, colete e calça em azul-marinho com lapela de cetim.',hex:'#1f3f7a',photo:'media/marinho-cetim.jpg',video:'media/marinho-cetim.mp4',bg:'hall',pad:false},
- {id:'marinho',cut:'media/cut-marinho.webp',name:'Azul-marinho',pieces:'3 peças',desc:'Paletó, colete e calça em azul-marinho, lapela clássica.',hex:'#24498a',photo:'media/marinho.jpg',video:'media/marinho.mp4',bg:'hall',pad:false},
- {id:'cobalto',cut:'media/cut-cobalto.webp',name:'Azul-cobalto',pieces:'3 peças',desc:'Paletó, colete e calça em azul cobalto vivo.',hex:'#2a62b5',photo:'media/cobalto.jpg',video:'media/cobalto.mp4',bg:'hall',pad:false},
- {id:'denim',cut:'media/cut-denim.webp',name:'Azul-denim',pieces:'3 peças',desc:'Paletó, colete e calça em azul-denim, tecido texturizado.',hex:'#3d6fa3',photo:'media/denim.jpg',video:'media/denim.mp4',bg:'hall',pad:false},
- {id:'denim-claro',cut:'media/cut-denim-claro.webp',name:'Azul-denim claro',pieces:'3 peças',desc:'Paletó, colete e calça em azul texturizado, botões marinho.',hex:'#3f6fa6',photo:'media/denim-claro.jpg',video:'media/denim-claro.mp4',bg:'hall',pad:false},
- {id:'celeste-lapela-preta',cut:'media/cut-celeste-lapela-preta.webp',name:'Azul-celeste com lapela preta',pieces:'3 peças',desc:'Paletó, colete e calça em azul-celeste com lapela de cetim preta.',hex:'#8fb6e3',photo:'media/celeste-lapela-preta.jpg',video:'media/celeste-lapela-preta.mp4',bg:'hall',pad:false},
- {id:'celeste-linho',cut:'media/cut-celeste-linho.webp',name:'Azul-celeste linho',pieces:'3 peças',desc:'Paletó, colete e calça em linho azul-celeste.',hex:'#a9c8ec',photo:'media/celeste-linho.jpg',video:'media/celeste-linho.mp4',bg:'hall',pad:false},
- {id:'celeste',cut:'media/cut-celeste.webp',name:'Azul-celeste',pieces:'3 peças',desc:'Paletó, colete e calça em azul-celeste, botões marinho.',hex:'#b4d3ef',photo:'media/celeste.jpg',video:'media/celeste.mp4',bg:'hall',pad:false},
- {id:'cinza-claro',cut:'media/cut-cinza-claro.webp',name:'Cinza-claro',pieces:'3 peças',desc:'Paletó, colete e calça em linho cinza-claro, botões bege.',hex:'#cfcfcc',photo:'media/cinza-claro.jpg',video:'media/cinza-claro.mp4',bg:'hall',pad:false},
- {id:'off-white',cut:'media/cut-off-white.webp',name:'Off-white com lapela de cetim',pieces:'3 peças',desc:'Paletó, colete e calça off-white com lapela de cetim.',hex:'#f1e9d8',photo:'media/off-white.jpg',video:'media/off-white.mp4',bg:'hall',pad:false},
- {id:'azul-noite',cut:'media/cut-azul-noite.webp',name:'Azul-noite',pieces:'3 peças',desc:'Paletó, colete e calça em azul-noite, lapela clássica.',hex:'#1f3354',photo:'media/azul-noite.jpg',video:'media/azul-noite.mp4',bg:'warm',pad:false},
- {id:'azul-jacquard',cut:'media/cut-azul-jacquard.webp',name:'Azul jacquard com lapela preta',pieces:'3 peças',desc:'Paletó, colete e calça em jacquard azul com lapela de cetim preta.',hex:'#3c5578',photo:'media/azul-jacquard.jpg',video:'media/azul-jacquard.mp4',bg:'warm',pad:false},
- {id:'grafite-xadrez',cut:'media/cut-grafite-xadrez.webp',name:'Grafite xadrez',pieces:'3 peças',desc:'Paletó, colete e calça em xadrez grafite, botões marrons.',hex:'#4a4d48',photo:'media/grafite-xadrez.jpg',video:'media/grafite-xadrez.mp4',bg:'warm',pad:false},
- {id:'grafite-mescla',cut:'media/cut-grafite-mescla.webp',name:'Grafite mescla',pieces:'3 peças',desc:'Paletó, colete e calça em grafite mesclado.',hex:'#4b4e4d',photo:'media/grafite-mescla.jpg',video:'media/grafite-mescla.mp4',bg:'warm',pad:false},
- {id:'verde-salvia',cut:'media/cut-verde-salvia.webp',name:'Verde-sálvia',pieces:'3 peças',desc:'Paletó, colete e calça em verde-sálvia, botões pretos.',hex:'#8a9e76',photo:'media/verde-salvia.jpg',video:'media/verde-salvia.mp4',bg:'warm',pad:false},
- {id:'azul-petroleo',cut:'media/cut-azul-petroleo.webp',name:'Azul-petróleo',pieces:'3 peças',desc:'Paletó, colete e calça em azul-petróleo.',hex:'#2f5666',photo:'media/azul-petroleo.jpg',video:'media/azul-petroleo.mp4',bg:'warm',pad:false},
- {id:'turquesa',cut:'media/cut-turquesa.webp',name:'Turquesa',pieces:'3 peças',desc:'Paletó, colete e calça em turquesa texturizado.',hex:'#2f8a96',photo:'media/turquesa.jpg',video:'media/turquesa.mp4',bg:'warm',pad:false},
- {id:'verde-menta',cut:'media/cut-verde-menta.webp',name:'Verde-menta',pieces:'3 peças',desc:'Paletó, colete e calça em verde-menta, botões brancos.',hex:'#a9c78f',photo:'media/verde-menta.jpg',video:'media/verde-menta.mp4',bg:'warm',pad:false},
- {id:'verde-esmeralda',cut:'media/cut-verde-esmeralda.webp',name:'Verde-esmeralda',pieces:'3 peças',desc:'Paletó, colete e calça em verde-esmeralda.',hex:'#12705c',photo:'media/verde-esmeralda.jpg',video:'media/verde-esmeralda.mp4',bg:'warm',pad:false},
- {id:'verde-oliva',cut:'media/cut-verde-oliva.webp',name:'Verde-oliva',pieces:'3 peças',desc:'Paletó, colete e calça em verde-oliva, botões bege.',hex:'#6b6b2e',photo:'media/verde-oliva.jpg',video:'media/verde-oliva.mp4',bg:'warm',pad:false},
- {id:'preto-jacquard',cut:'media/cut-preto-jacquard.webp',name:'Preto jacquard',pieces:'3 peças',desc:'Paletó, colete e calça em jacquard floral preto, lapela de cetim.',hex:'#1c1c1e',photo:'media/preto-jacquard.jpg',video:'media/preto-jacquard.mp4',bg:'dusk',pad:false},
- {id:'smoking-trespassado',cut:'media/cut-smoking-trespassado.webp',name:'Azul-marinho smoking',pieces:'3 peças',desc:'Paletó com lapela de cetim preta e colete trespassado em azul-marinho.',hex:'#1f3a73',photo:'media/smoking-trespassado.jpg',video:'media/smoking-trespassado.mp4',bg:'dusk',pad:false},
- {id:'preto',cut:'media/cut-preto.webp',name:'Preto clássico',pieces:'3 peças',desc:'Paletó, colete e calça em preto, lapela de cetim.',hex:'#141414',photo:'media/preto.jpg',video:'media/preto.mp4',bg:'dusk',pad:false},
- {id:'preto-brilho',cut:'media/cut-preto-brilho.webp',name:'Preto com brilhos',pieces:'3 peças',desc:'Paletó com microbrilhos, colete trespassado e calça em preto.',hex:'#18181a',photo:'media/preto-brilho.jpg',video:'media/preto-brilho.mp4',bg:'dusk',pad:false},
- {id:'prata-paisley',cut:'media/cut-prata-paisley.webp',name:'Prata paisley',pieces:'3 peças',desc:'Paletó, colete e calça em jacquard paisley prata e preto, lapela xale.',hex:'#8d8d90',photo:'media/prata-paisley.jpg',video:'media/prata-paisley.mp4',bg:'dusk',pad:false},
- {id:'azul-poa',cut:'media/cut-azul-poa.webp',name:'Azul poá smoking',pieces:'3 peças',desc:'Paletó, colete e calça em azul com micro-pontos e lapela xale preta.',hex:'#27499a',photo:'media/azul-poa.jpg',video:'media/azul-poa.mp4',bg:'dusk',pad:false},
- {id:'marinho-trespassado',cut:'media/cut-marinho-trespassado.webp',name:'Azul-marinho trespassado',pieces:'3 peças',desc:'Paletó, colete trespassado e calça em azul-marinho.',hex:'#1c2e57',photo:'media/marinho-trespassado.jpg',video:'media/marinho-trespassado.mp4',bg:'dusk',pad:false},
- {id:'ardosia-xadrez',cut:'media/cut-ardosia-xadrez.webp',name:'Azul-ardósia xadrez',pieces:'3 peças',desc:'Paletó, colete e calça em azul-ardósia xadrez.',hex:'#46587a',photo:'media/ardosia-xadrez.jpg',video:'media/ardosia-xadrez.mp4',bg:'dusk',pad:false},
- {id:'marinho-escuro',cut:'media/cut-marinho-escuro.webp',name:'Azul-marinho escuro',pieces:'3 peças',desc:'Paletó, colete e calça em azul-marinho escuro.',hex:'#1b2c4f',photo:'media/marinho-escuro.jpg',video:'media/marinho-escuro.mp4',bg:'warm',pad:false},
- {id:'marinho-textura',cut:'media/cut-marinho-textura.webp',name:'Azul-marinho texturizado',pieces:'3 peças',desc:'Paletó, colete e calça em azul-marinho texturizado.',hex:'#1f3057',photo:'media/marinho-textura.jpg',video:'media/marinho-textura.mp4',bg:'warm',pad:false},
- {id:'cinza-trespassado',cut:'media/cut-cinza-trespassado.webp',name:'Cinza-claro trespassado',pieces:'3 peças',desc:'Paletó, colete trespassado e calça em cinza-claro.',hex:'#b4b3ae',photo:'media/cinza-trespassado.jpg',video:'media/cinza-trespassado.mp4',bg:'dusk',pad:false},
- {id:'cinza-cetim',cut:'media/cut-cinza-cetim.webp',name:'Cinza com lapela de cetim',pieces:'3 peças',desc:'Paletó com lapela de cetim, colete e calça em cinza texturizado.',hex:'#7d7d7f',photo:'media/cinza-cetim.jpg',video:'media/cinza-cetim.mp4',bg:'dusk',pad:false},
- {id:'cinza-perola',cut:'media/cut-cinza-perola.webp',name:'Cinza-pérola',pieces:'3 peças',desc:'Paletó, colete e calça em cinza-pérola, botões cinza.',hex:'#b9b7b0',photo:'media/cinza-perola.jpg',video:'media/cinza-perola.mp4',bg:'dusk',pad:false},
- {id:'cinza-gelo',cut:'media/cut-cinza-gelo.webp',name:'Cinza-gelo',pieces:'3 peças',desc:'Paletó, colete e calça em cinza-gelo.',hex:'#c2bfb8',photo:'media/cinza-gelo.jpg',video:'media/cinza-gelo.mp4',bg:'dusk',pad:false},
- {id:'preto-cetim',cut:'media/cut-preto-cetim.webp',name:'Preto com lapela de cetim',pieces:'3 peças',desc:'Paletó com lapela de cetim, colete e calça em preto.',hex:'#161616',photo:'media/preto-cetim.jpg',video:'media/preto-cetim.mp4',bg:'dusk',pad:false},
- {id:'vinho-trespassado',cut:'media/cut-vinho-trespassado.webp',name:'Vinho trespassado',pieces:'3 peças',desc:'Paletó com lapela preta, colete trespassado e calça em vinho.',hex:'#6e1f2c',photo:'media/vinho-trespassado.jpg',video:'media/vinho-trespassado.mp4',bg:'dusk',pad:false},
- {id:'bordo',cut:'media/cut-bordo.webp',name:'Bordô com lapela preta',pieces:'3 peças',desc:'Paletó com lapela preta, colete e calça em bordô.',hex:'#5c2a34',photo:'media/bordo.jpg',video:'media/bordo.mp4',bg:'dusk',pad:false},
- {id:'malva-trespassado',cut:'media/cut-malva-trespassado.webp',name:'Malva texturizado',pieces:'3 peças',desc:'Paletó, colete trespassado e calça em malva texturizado.',hex:'#7d4a4f',photo:'media/malva-trespassado.jpg',video:'media/malva-trespassado.mp4',bg:'dusk',pad:false},
- {id:'grafite-classico',cut:'media/cut-grafite-classico.webp',name:'Grafite',pieces:'3 peças',desc:'Paletó, colete e calça em grafite.',hex:'#5a5b5e',photo:'media/grafite-classico.jpg',video:'media/grafite-classico.mp4',bg:'dusk',pad:false},
- {id:'cinza-prata',cut:'media/cut-cinza-prata.webp',name:'Cinza-prata',pieces:'3 peças',desc:'Paletó, colete e calça em cinza-prata, botões escuros.',hex:'#a7a7a5',photo:'media/cinza-prata.jpg',video:'media/cinza-prata.mp4',bg:'dusk',pad:false},
- {id:'marfim',cut:'media/cut-marfim.webp',name:'Marfim',pieces:'3 peças',desc:'Paletó, colete e calça em marfim, botões dourados.',hex:'#e9e4d8',photo:'media/marfim.jpg',video:'media/marfim.mp4',bg:'red',pad:false},
- {id:'cinza-azulado',cut:'media/cut-cinza-azulado.webp',name:'Cinza-azulado',pieces:'3 peças',desc:'Paletó, colete e calça em cinza-azulado, botões tom sobre tom.',hex:'#9aa3b5',photo:'media/cinza-azulado.jpg',video:'media/cinza-azulado.mp4',bg:'red',pad:false},
- {id:'nude',cut:'media/cut-nude.webp',name:'Bege-nude',pieces:'3 peças',desc:'Paletó, colete e calça em bege-nude.',hex:'#d6bfa7',photo:'media/nude.jpg',video:'media/nude.mp4',bg:'red',pad:false},
- {id:'rose',cut:'media/cut-rose.webp',name:'Rosé-nude',pieces:'3 peças',desc:'Paletó, colete e calça em rosé-nude, botões brancos.',hex:'#d4b3a6',photo:'media/rose.jpg',video:'media/rose.mp4',bg:'red',pad:false},
- {id:'rose-claro',cut:'media/cut-rose-claro.webp',name:'Rosé-claro',pieces:'3 peças',desc:'Paletó, colete e calça em rosé-claro, botões brancos.',hex:'#cfb5aa',photo:'media/rose-claro.jpg',video:'media/rose-claro.mp4',bg:'red',pad:false},
- {id:'cinza-medio',cut:'media/cut-cinza-medio.webp',name:'Cinza-médio com vivo',pieces:'3 peças',desc:'Paletó com detalhes em vivo, colete e calça em cinza-médio.',hex:'#8e8e8e',photo:'media/cinza-medio.jpg',video:'media/cinza-medio.mp4',bg:'red',pad:false},
- {id:'cinza-colete-prata',cut:'media/cut-cinza-colete-prata.webp',name:'Cinza texturizado, colete prata',pieces:'3 peças',desc:'Paletó e calça em cinza texturizado com colete de cetim prata.',hex:'#6f6f72',photo:'media/cinza-colete-prata.jpg',video:'media/cinza-colete-prata.mp4',bg:'red',pad:false},
- {id:'vinho-vivo',cut:'media/cut-vinho-vivo.webp',name:'Vinho com vivo preto',pieces:'3 peças',desc:'Paletó com vivo preto, colete e calça em vinho.',hex:'#7a1f2b',photo:'media/vinho-vivo.jpg',video:'media/vinho-vivo.mp4',bg:'red',pad:false},
- {id:'terracota',cut:'media/cut-terracota.webp',name:'Terracota',pieces:'3 peças',desc:'Paletó, colete e calça em terracota, botões bronze.',hex:'#8a3a30',photo:'media/terracota.jpg',video:'media/terracota.mp4',bg:'red',pad:false},
- {id:'preto-lapela-classica',cut:'media/cut-preto-lapela-classica.webp',name:'Preto lapela clássica',pieces:'3 peças',desc:'Paletó, colete e calça em preto, lapela clássica.',hex:'#151515',photo:'media/preto-lapela-classica.jpg',video:'media/preto-lapela-classica.mp4',bg:'red',pad:false},
- {id:'marinho-profundo',cut:'media/cut-marinho-profundo.webp',name:'Azul-marinho profundo',pieces:'3 peças',desc:'Paletó, colete e calça em azul-marinho profundo.',hex:'#14295a',grp:'media/pad-marinho-profundo.jpg',photo:'media/marinho-profundo.jpg',video:'media/marinho-profundo.mp4',bg:'red',pad:true},
- {id:'azul-acinzentado',cut:'media/cut-azul-acinzentado.webp',name:'Azul-acinzentado',pieces:'3 peças',desc:'Paletó, colete e calça em azul-acinzentado claro.',hex:'#8fa3b3',grp:'media/pad-azul-acinzentado.jpg',photo:'media/azul-acinzentado.jpg',video:'media/azul-acinzentado.mp4',bg:'red',pad:true},
- {id:'cinza-chumbo',cut:'media/cut-cinza-chumbo.webp',name:'Cinza-chumbo',pieces:'3 peças',desc:'Paletó, colete e calça em cinza-chumbo.',hex:'#4a4c4e',grp:'media/pad-cinza-chumbo.jpg',photo:'media/cinza-chumbo.jpg',video:'media/cinza-chumbo.mp4',bg:'red',pad:true},
- {id:'azul-indigo',cut:'media/cut-azul-indigo.webp',name:'Azul-índigo',pieces:'3 peças',desc:'Paletó, colete e calça em azul-índigo.',hex:'#243f78',grp:'media/pad-azul-indigo.jpg',photo:'media/azul-indigo.jpg',video:'media/azul-indigo.mp4',bg:'red',pad:true},
- {id:'azul-aco',cut:'media/cut-azul-aco.webp',name:'Azul-aço',pieces:'3 peças',desc:'Paletó, colete e calça em azul-aço, botões marinho.',hex:'#4f77a6',grp:'media/pad-azul-aco.jpg',photo:'media/azul-aco.jpg',video:'media/azul-aco.mp4',bg:'red',pad:true}
+ {id:'01',num:1,name:"Verde-petróleo",fam:"Petróleo",hex:'#18414d',cut:'media/cut-01.webp',photo:'media/01.jpg',video:'media/01.mp4',pad:false},
+ {id:'02',num:2,name:"Azul-marinho com lapela preta",fam:"Azul-marinho",hex:'#121b30',cut:'media/cut-02.webp',photo:'media/02.jpg',video:'media/02.mp4',pad:false},
+ {id:'03',num:3,name:"Taupe",fam:"Bege",hex:'#8c6d58',cut:'media/cut-03.webp',photo:'media/03.jpg',video:'media/03.mp4',pad:false},
+ {id:'04',num:4,name:"Vinho",fam:"Vinho",hex:'#4d1517',cut:'media/cut-04.webp',photo:'media/04.jpg',video:'media/04.mp4',pad:false},
+ {id:'05',num:5,name:"Verde-sálvia",fam:"Verde",hex:'#58573f',cut:'media/cut-05.webp',photo:'media/05.jpg',video:'media/05.mp4',pad:false},
+ {id:'06',num:6,name:"Vinho com lapela preta",fam:"Vinho",hex:'#461215',cut:'media/cut-06.webp',photo:'media/06.jpg',video:'media/06.mp4',pad:false},
+ {id:'07',num:7,name:"Verde-oliva",fam:"Verde",hex:'#473a21',cut:'media/cut-07.webp',photo:'media/07.jpg',video:'media/07.mp4',pad:false},
+ {id:'08',num:8,name:"Verde-esmeralda",fam:"Verde",hex:'#0e3934',cut:'media/cut-08.webp',photo:'media/08.jpg',video:'media/08.mp4',pad:false},
+ {id:'09',num:9,name:"Verde-menta",fam:"Verde",hex:'#888964',cut:'media/cut-09.webp',photo:'media/09.jpg',video:'media/09.mp4',pad:false},
+ {id:'10',num:10,name:"Terracota",fam:"Vinho",hex:'#551717',cut:'media/cut-10.webp',photo:'media/10.jpg',video:'media/10.mp4',pad:false},
+ {id:'11',num:11,name:"Bege-areia",fam:"Bege",hex:'#ad907c',cut:'media/cut-11.webp',photo:'media/11.jpg',video:'media/11.mp4',pad:false},
+ {id:'12',num:12,name:"Off-white com lapela de cetim",fam:"Branco",hex:'#cfbaa2',cut:'media/cut-12.webp',photo:'media/12.jpg',video:'media/12.mp4',pad:false},
+ {id:'13',num:13,name:"Rosé-nude",fam:"Rosé",hex:'#af8d7c',cut:'media/cut-13.webp',photo:'media/13.jpg',video:'media/13.mp4',pad:false},
+ {id:'14',num:14,name:"Rosé-nude claro",fam:"Rosé",hex:'#a68779',cut:'media/cut-14.webp',photo:'media/14.jpg',video:null,pad:false},
+ {id:'15',num:15,name:"Preto com lapela de cetim",fam:"Preto",hex:'#13110f',cut:'media/cut-15.webp',photo:'media/15.jpg',video:'media/15.mp4',pad:false},
+ {id:'16',num:16,name:"Preto clássico",fam:"Preto",hex:'#1a1816',cut:'media/cut-16.webp',photo:'media/16.jpg',video:'media/16.mp4',pad:true,padName:'Preto'},
+ {id:'17',num:17,name:"Preto jacquard",fam:"Preto",hex:'#1c1a16',cut:'media/cut-17.webp',photo:'media/17.jpg',video:'media/17.mp4',pad:false},
+ {id:'18',num:18,name:"Preto com brilhos",fam:"Preto",hex:'#151211',cut:'media/cut-18.webp',photo:'media/18.jpg',video:'media/18.mp4',pad:false},
+ {id:'19',num:19,name:"Preto lapela de cetim",fam:"Preto",hex:'#171412',cut:'media/cut-19.webp',photo:'media/19.jpg',video:'media/19.mp4',pad:false},
+ {id:'20',num:20,name:"Prata paisley",fam:"Cinza",hex:'#4d3e38',cut:'media/cut-20.webp',photo:'media/20.jpg',video:'media/20.mp4',pad:false},
+ {id:'21',num:21,name:"Azul-marinho",fam:"Azul-marinho",hex:'#121a2d',cut:'media/cut-21.webp',photo:'media/21.jpg',video:'media/21.mp4',pad:true,padName:'Azul-marinho'},
+ {id:'22',num:22,name:"Azul-royal com lapela de cetim",fam:"Azul royal",hex:'#0f254d',cut:'media/cut-22.webp',photo:'media/22.jpg',video:'media/22.mp4',pad:false},
+ {id:'23',num:23,name:"Azul-marinho gravata champanhe",fam:"Azul-marinho",hex:'#131929',cut:'media/cut-23.webp',photo:'media/23.jpg',video:'media/23.mp4',pad:false},
+ {id:'24',num:24,name:"Marsala",fam:"Vinho",hex:'#552c2d',cut:'media/cut-24.webp',photo:'media/24.jpg',video:'media/24.mp4',pad:false},
+ {id:'25',num:25,name:"Marfim",fam:"Branco",hex:'#bdac95',cut:'media/cut-25.webp',photo:'media/25.jpg',video:'media/25.mp4',pad:false},
+ {id:'26',num:26,name:"Grafite xadrez",fam:"Grafite",hex:'#2f2c2a',cut:'media/cut-26.webp',photo:'media/26.jpg',video:'media/26.mp4',pad:false},
+ {id:'27',num:27,name:"Azul-royal",fam:"Azul royal",hex:'#182b51',cut:'media/cut-27.webp',photo:'media/27.jpg',video:'media/27.mp4',pad:false},
+ {id:'28',num:28,name:"Mostarda",fam:"Amarelo",hex:'#a3631b',cut:'media/cut-28.webp',photo:'media/28.jpg',video:'media/28.mp4',pad:false},
+ {id:'29',num:29,name:"Azul-marinho gravata champanhe",fam:"Azul-marinho",hex:'#141a2b',cut:'media/cut-29.webp',photo:'media/29.jpg',video:'media/29.mp4',pad:false},
+ {id:'30',num:30,name:"Azul-marinho trespassado",fam:"Azul-marinho",hex:'#161c2c',cut:'media/cut-30.webp',photo:'media/30.jpg',video:'media/30.mp4',pad:false},
+ {id:'31',num:31,name:"Cinza-claro",fam:"Cinza claro",hex:'#807468',cut:'media/cut-31.webp',photo:'media/31.jpg',video:'media/31.mp4',pad:true,padName:'Cinza-claro'},
+ {id:'32',num:32,name:"Cinza com colete prata",fam:"Cinza",hex:'#433834',cut:'media/cut-32.webp',photo:'media/32.jpg',video:'media/32.mp4',pad:false},
+ {id:'33',num:33,name:"Grafite xadrez escuro",fam:"Grafite",hex:'#2e2b26',cut:'media/cut-33.webp',photo:'media/33.jpg',video:'media/33.mp4',pad:false},
+ {id:'34',num:34,name:"Cinza-médio",fam:"Cinza",hex:'#3e3a3a',cut:'media/cut-34.webp',photo:'media/34.jpg',video:'media/34.mp4',pad:false},
+ {id:'35',num:35,name:"Azul-denim",fam:"Azul médio",hex:'#243956',cut:'media/cut-35.webp',photo:'media/35.jpg',video:'media/35.mp4',pad:false},
+ {id:'36',num:36,name:"Azul-denim claro",fam:"Azul médio",hex:'#2c3f59',cut:'media/cut-36.webp',photo:'media/36.jpg',video:'media/36.mp4',pad:false},
+ {id:'37',num:37,name:"Cinza-claro linho",fam:"Cinza claro",hex:'#918274',cut:'media/cut-37.webp',photo:'media/37.jpg',video:'media/37.mp4',pad:false},
+ {id:'38',num:38,name:"Azul-cobalto",fam:"Azul royal",hex:'#183562',cut:'media/cut-38.webp',photo:'media/38.jpg',video:'media/38.mp4',pad:false},
+ {id:'39',num:39,name:"Cinza-claro trespassado",fam:"Cinza claro",hex:'#82776c',cut:'media/cut-39.webp',photo:'media/39.jpg',video:'media/39.mp4',pad:false},
+ {id:'40',num:40,name:"Cinza com detalhe nos bolsos",fam:"Cinza",hex:'#61564f',cut:'media/cut-40.webp',photo:'media/40.jpg',video:'media/40.mp4',pad:false},
+ {id:'41',num:41,name:"Azul-celeste",fam:"Azul claro",hex:'#8c9db0',cut:'media/cut-41.webp',photo:'media/41.jpg',video:'media/41.mp4',pad:false},
+ {id:'42',num:42,name:"Caramelo",fam:"Bege",hex:'#8b623c',cut:'media/cut-42.webp',photo:'media/42.jpg',video:'media/42.mp4',pad:false},
+ {id:'43',num:43,name:"Azul-celeste com lapela preta",fam:"Azul claro",hex:'#758ca2',cut:'media/cut-43.webp',photo:'media/43.jpg',video:'media/43.mp4',pad:false},
+ {id:'44',num:44,name:"Taupe claro",fam:"Bege",hex:'#988678',cut:'media/cut-44.webp',photo:'media/44.jpg',video:'media/44.mp4',pad:false},
+ {id:'45',num:45,name:"Off-white linho",fam:"Branco",hex:'#b1a596',cut:'media/cut-45.webp',photo:'media/45.jpg',video:'media/45.mp4',pad:false},
+ {id:'46',num:46,name:"Cinza com lapela de cetim",fam:"Cinza",hex:'#4d4540',cut:'media/cut-46.webp',photo:'media/46.jpg',video:'media/46.mp4',pad:false},
+ {id:'47',num:47,name:"Grafite",fam:"Grafite",hex:'#35312d',cut:'media/cut-47.webp',photo:'media/47.jpg',video:'media/47.mp4',pad:true,padName:'Grafite'},
+ {id:'48',num:48,name:"Cinza-azulado",fam:"Cinza claro",hex:'#7e787b',cut:'media/cut-48.webp',photo:'media/48.jpg',video:'media/48.mp4',pad:false},
+ {id:'49',num:49,name:"Azul-celeste botões azuis",fam:"Azul claro",hex:'#909fa6',cut:'media/cut-49.webp',photo:'media/49.jpg',video:'media/49.mp4',pad:false},
+ {id:'50',num:50,name:"Areia",fam:"Bege",hex:'#baa188',cut:'media/cut-50.webp',photo:'media/50.jpg',video:'media/50.mp4',pad:true,padName:'Bege'},
+ {id:'51',num:51,name:"Azul-marinho escuro",fam:"Azul-marinho",hex:'#151a29',cut:'media/cut-51.webp',photo:'media/51.jpg',video:'media/51.mp4',pad:false},
+ {id:'52',num:52,name:"Azul-petróleo",fam:"Petróleo",hex:'#212d36',cut:'media/cut-52.webp',photo:'media/52.jpg',video:'media/52.mp4',pad:false},
+ {id:'53',num:53,name:"Azul paisley com lapela preta",fam:"Azul médio",hex:'#222735',cut:'media/cut-53.webp',photo:'media/53.jpg',video:'media/53.mp4',pad:false},
+ {id:'54',num:54,name:"Azul-aço",fam:"Azul médio",hex:'#3a4d66',cut:'media/cut-54.webp',photo:'media/54.jpg',video:'media/54.mp4',pad:false},
+ {id:'55',num:55,name:"Branco jacquard",fam:"Branco",hex:'#c9b9a8',cut:'media/cut-55.webp',photo:'media/55.jpg',video:'media/55.mp4',pad:false},
+ {id:'56',num:56,name:"Bege trespassado",fam:"Bege",hex:'#bca387',cut:'media/cut-56.webp',photo:'media/56.jpg',video:'media/56.mp4',pad:false},
+ {id:'57',num:57,name:"Bordô com lapela preta",fam:"Vinho",hex:'#3e1d20',cut:'media/cut-57.webp',photo:'media/57.jpg',video:'media/57.mp4',pad:false},
+ {id:'58',num:58,name:"Azul com lapela preta",fam:"Azul médio",hex:'#31415d',cut:'media/cut-58.webp',photo:'media/58.jpg',video:'media/58.mp4',pad:false},
+ {id:'59',num:59,name:"Azul-royal poá com lapela de cetim",fam:"Azul royal",hex:'#0f2140',cut:'media/cut-59.webp',photo:'media/59.jpg',video:'media/59.mp4',pad:false},
+ {id:'60',num:60,name:"Azul médio",fam:"Azul médio",hex:'#27395a',cut:'media/cut-60.webp',photo:'media/60.jpg',video:'media/60.mp4',pad:false},
+ {id:'61',num:61,name:"Cinza-azulado claro",fam:"Cinza claro",hex:'#6f7173',cut:'media/cut-61.webp',photo:'media/61.jpg',video:'media/61.mp4',pad:false},
+ {id:'62',num:62,name:"Azul xadrez gravata champanhe",fam:"Azul-marinho",hex:'#262937',cut:'media/cut-62.webp',photo:'media/62.jpg',video:'media/62.mp4',pad:false},
+ {id:'63',num:63,name:"Bege-areia claro",fam:"Bege",hex:'#baa68e',cut:'media/cut-63.webp',photo:'media/63.jpg',video:'media/63.mp4',pad:false},
+ {id:'64',num:64,name:"Amarelo-mostarda",fam:"Amarelo",hex:'#bd8130',cut:'media/cut-64.webp',photo:'media/64.jpg',video:'media/64.mp4',pad:false},
+ {id:'65',num:65,name:"Azul-marinho profundo",fam:"Azul-marinho",hex:'#1e263b',cut:'media/cut-65.webp',photo:'media/65.jpg',video:'media/65.mp4',pad:false}
 ];
+
 var urls={};
 var products=[];
+function famIdx(f){var i=FAMS.indexOf(f);return i<0?99:i;}
 function rebuildProducts(){
   var l=[];
   BUILTIN.forEach(function(b){
     var o=ST.over[b.id]||{};if(o.removed)return;
-    l.push({id:b.id,name:b.name,pieces:b.pieces,desc:b.desc,hex:b.hex,photo:b.photo,video:b.video,cut:b.cut,grp:b.grp||null,gp:b.gp||null,bg:b.bg,pad:o.pad===undefined?b.pad:!!o.pad,builtin:true});
+    l.push({id:b.id,num:b.num,name:b.name,fam:b.fam,pieces:'3 peças',desc:'',hex:b.hex,photo:b.photo,video:b.video,cut:b.cut,padName:b.padName||null,pad:o.pad===undefined?b.pad:!!o.pad,builtin:true});
   });
+  l.sort(function(a,b){return famIdx(a.fam)-famIdx(b.fam)||lum(b.hex)-lum(a.hex)||a.num-b.num;});
   ST.custom.forEach(function(c){
     var u=urls[c.id];if(!u||!u.photo)return;
-    l.push({id:c.id,name:c.name,pieces:c.pieces,desc:c.desc||'Terno cadastrado pela equipe.',hex:c.hex,photo:u.photo,video:u.video||null,cut:u.cut||null,grp:null,gp:null,bg:'stage',pad:!!c.pad,builtin:false});
+    l.push({id:c.id,num:900,name:c.name,fam:'Novos',pieces:c.pieces,desc:c.desc||'',hex:c.hex,photo:u.photo,video:u.video||null,cut:u.cut||null,padName:null,pad:!!c.pad,builtin:false});
   });
   products=l;
   if(!products.length)return;
@@ -227,8 +231,13 @@ function rebuildProducts(){
 }
 function byIdSafe(id){for(var i=0;i<products.length;i++){if(products[i].id===id)return products[i];}return null;}
 function byId(id){return byIdSafe(id)||products[0];}
-function padList(){return products.filter(function(p){return p.pad;});}
+function lum(h){h=String(h||'#000').replace('#','');return .299*parseInt(h.substr(0,2),16)+.587*parseInt(h.substr(2,2),16)+.114*parseInt(h.substr(4,2),16);}
+var PADORD=['Azul-marinho','Cinza-claro','Grafite','Preto','Bege'];
+function padRank(p){var i=PADORD.indexOf(p.padName||'');return i<0?99:i;}
+function padList(){return products.filter(function(p){return p.pad;}).sort(function(a,b){return padRank(a)-padRank(b);});}
 function padCount(){return padList().length;}
+function pidx(id){for(var i=0;i<products.length;i++){if(products[i].id===id)return i;}return 0;}
+function famList(){var o=[];products.forEach(function(p){if(o.indexOf(p.fam)<0)o.push(p.fam);});return o;}
 async function loadCustomMedia(){
   for(var i=0;i<ST.custom.length;i++){
     var c=ST.custom[i];if(urls[c.id])continue;
@@ -239,16 +248,15 @@ async function loadCustomMedia(){
   }
 }
 
-var S={view:'shop',pid:'azul-royal',pad:'marinho-profundo',mode:'foto',cmp:[null,null],cmode:'foto',cplaying:true,staff:{on:false,tab:'modelos',confirm:null,msg:''}};
-var frame=$('#frame'),photo=$('#photo'),vid=$('#vid'),vctl=$('#vctl'),vplay=$('#vplay'),vrange=$('#vrange'),vtime=$('#vtime'),hint=$('#hint'),grp=$('#grp');
-var PLAY='<svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><polygon points="8,5 19,12 8,19" fill="#f2f0ec"></polygon></svg>';
-var PAUSE='<svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><rect x="6" y="5" width="4" height="14" fill="#f2f0ec"></rect><rect x="14" y="5" width="4" height="14" fill="#f2f0ec"></rect></svg>';
+var S={view:'shop',pid:'01',pad:'21',mode:'foto',staff:{on:false,tab:'modelos',confirm:null,msg:''}};
+var vw=$('#vw'),photo=$('#photo'),bd=$('#bd'),vid=$('#vid'),cap=$('#cap'),gw=$('#gw'),grp=$('#grp');
 var toastT=null;
 function toast(msg){var t=$('#toast');t.textContent=msg;t.hidden=false;clearTimeout(toastT);toastT=setTimeout(function(){t.hidden=true;},4200);}
 
 /* ---------- vitrine ---------- */
 var mediaKey='';
 function ensurePad(){var l=padList();if(!l.length)return null;if(!l.some(function(p){return p.id===S.pad;}))S.pad=l[0].id;return byId(S.pad);}
+
 var imgCache={},grpToken=0;
 function loadImg(src){
   if(imgCache[src])return imgCache[src];
@@ -285,140 +293,137 @@ function drawFig(ctx,img,cx,feet,H,flip,sh){
   ctx.drawImage(oc,cx-w/2,feet-2);
   ctx.drawImage(src,cx-w/2,feet-H,w,H);
 }
+
+/* ---------- recolor dos padrinhos (qualquer terno com recorte) ---------- */
+function s2l(c){c/=255;return c<=0.04045?c/12.92:Math.pow((c+0.055)/1.055,2.4);}
+function l2s(c){c=c<=0.0031308?12.92*c:1.055*Math.pow(c,1/2.4)-0.055;c=Math.round(c*255);return c<0?0:(c>255?255:c);}
+function rgb2lab(r,g,b){r=s2l(r);g=s2l(g);b=s2l(b);
+  var X=(0.4124*r+0.3576*g+0.1805*b)/0.95047,Y=0.2126*r+0.7152*g+0.0722*b,Z=(0.0193*r+0.1192*g+0.9505*b)/1.08883;
+  function f(t){return t>0.008856?Math.cbrt(t):7.787*t+16/116;}
+  var fx=f(X),fy=f(Y),fz=f(Z);return [116*fy-16,500*(fx-fy),200*(fy-fz)];}
+function lab2rgb(L,a,b){var fy=(L+16)/116,fx=a/500+fy,fz=fy-b/200;
+  function f(t){var t3=t*t*t;return t3>0.008856?t3:(t-16/116)/7.787;}
+  var X=f(fx)*0.95047,Y=f(fy),Z=f(fz)*1.08883;
+  return [l2s(3.2406*X-1.5372*Y-0.4986*Z),l2s(-0.9689*X+1.8758*Y+0.0415*Z),l2s(0.0557*X-0.2040*Y+1.0570*Z)];}
+function cutLab(img){
+  var c=document.createElement('canvas'),w=img.width,h=img.height;c.width=w;c.height=h;var x=c.getContext('2d');x.drawImage(img,0,0);
+  var y0=Math.round(h*.58),y1=Math.round(h*.85),x0=Math.round(w*.3),x1=Math.round(w*.7);
+  var d=x.getImageData(x0,y0,x1-x0,y1-y0).data,L=[],A=[],B=[];
+  for(var i=0;i<d.length;i+=4){if(d[i+3]>250){var q=rgb2lab(d[i],d[i+1],d[i+2]);L.push(q[0]);A.push(q[1]);B.push(q[2]);}}
+  function med(a){a.sort(function(p,q){return p-q;});return a.length?a[a.length>>1]:50;}
+  var m=0;for(var j=0;j<L.length;j++)m+=L[j];m=L.length?m/L.length:50;var v=0;for(j=0;j<L.length;j++)v+=(L[j]-m)*(L[j]-m);
+  return {L:med(L.slice()),a:med(A),b:med(B),sd:L.length?Math.sqrt(v/L.length):10};}
+var padBase=null,padCache={};
+function padSource(){
+  if(padBase)return padBase;
+  padBase=Promise.all([loadImg('media/pad-base.jpg'),loadImg('media/pad-mask.png')]).then(function(r){
+    var w=1672,h=941,c=document.createElement('canvas');c.width=w;c.height=h;var x=c.getContext('2d');
+    x.drawImage(r[0],0,0,w,h);var img=x.getImageData(0,0,w,h);
+    x.clearRect(0,0,w,h);x.drawImage(r[1],0,0,w,h);var md=x.getImageData(0,0,w,h).data;
+    var n=0,sL=0,sa=0,sb=0,lab=new Float32Array(w*h*3),p=img.data;
+    for(var i=0,k=0;i<w*h;i++,k+=4){var q=rgb2lab(p[k],p[k+1],p[k+2]);lab[i*3]=q[0];lab[i*3+1]=q[1];lab[i*3+2]=q[2];
+      if(md[k]>128){n++;sL+=q[0];sa+=q[1];sb+=q[2];}}
+    var mL=sL/n,ma=sa/n,mb=sb/n,v=0;for(i=0,k=0;i<w*h;i++,k+=4){if(md[k]>128){var d=lab[i*3]-mL;v+=d*d;}}
+    return {w:w,h:h,img:img,md:md,lab:lab,mL:mL,ma:ma,mb:mb,sd:Math.sqrt(v/n)};
+  });
+  return padBase;
+}
+function padImage(pp){
+  if(padCache[pp.id])return padCache[pp.id];
+  padCache[pp.id]=Promise.all([padSource(),loadImg(pp.cut)]).then(function(r){
+    var s=r[0],t=cutLab(r[1]),k=Math.min(1.7,Math.max(0.7,t.sd/s.sd*1.15));
+    var c=document.createElement('canvas');c.width=s.w;c.height=s.h;var x=c.getContext('2d');
+    var out=x.createImageData(s.w,s.h),o=out.data,p=s.img.data,md=s.md;
+    for(var i=0,j=0;i<s.w*s.h;i++,j+=4){
+      var a=md[j]/255;
+      if(a<=0.004){o[j]=p[j];o[j+1]=p[j+1];o[j+2]=p[j+2];o[j+3]=255;continue;}
+      var L=(s.lab[i*3]-s.mL)*k+t.L,A=(s.lab[i*3+1]-s.ma)*0.4+t.a,B=(s.lab[i*3+2]-s.mb)*0.4+t.b;
+      var q=lab2rgb(L<0?0:(L>100?100:L),A,B);
+      o[j]=p[j]*(1-a)+q[0]*a;o[j+1]=p[j+1]*(1-a)+q[1]*a;o[j+2]=p[j+2]*(1-a)+q[2]*a;o[j+3]=255;}
+    x.putImageData(out,0,0);return c;
+  });
+  return padCache[pp.id];
+}
+function padLabel(p){return p.padName||p.name;}
 function renderGroup(){
   var g=byId(S.pid),pp=ensurePad(),tok=++grpToken;
-  var tags='<span class="tag tg">Noivo · '+esc(g.name)+'</span><span class="tag tp">Padrinhos · '+(pp?esc(pp.name):'-')+'</span>';
-  if(!pp||!g.cut||!pp.grp){
+  var tags='';
+  if(!pp||!g.cut||!pp.cut){
     grp.dataset.k='';
-    grp.innerHTML='<p style="margin:0;padding:96px 24px;text-align:center;color:var(--muted)">'+(!pp?'Nenhum modelo de padrinho escolhido.':(!pp.grp?'Este terno de padrinho ainda não tem a foto do grupo.':'Este modelo foi cadastrado sem a foto recortada, por isso ainda não aparece na vista em grupo.'))+'</p>';
+    grp.innerHTML='<p class="gmsg">'+(!pp?'Nenhum terno de padrinhos escolhido.':'Este modelo foi cadastrado sem a foto recortada, por isso ainda não aparece na vista em grupo.')+'</p>';
     return;
   }
   if(!grp.querySelector('canvas')||grp.dataset.k!==g.id+'|'+pp.id){
-    grp.innerHTML='<canvas width="1672" height="941" aria-label="Noivo de '+esc(g.name)+' com padrinhos de '+esc(pp.name)+'" role="img"></canvas>'+tags;
+    grp.innerHTML='<canvas width="1672" height="941" aria-label="Noivo de '+esc(g.name)+' com padrinhos de '+esc(padLabel(pp))+'" role="img"></canvas>'+tags;
     grp.dataset.k=g.id+'|'+pp.id;
     var cv=grp.querySelector('canvas'),ctx=cv.getContext('2d');
-    Promise.all([loadImg(pp.grp),loadImg(g.cut)]).then(function(r){
+    Promise.all([padImage(pp),loadImg(g.cut)]).then(function(r){
       if(tok!==grpToken)return;
       ctx.drawImage(r[0],0,0,1672,941);
-      drawFig(ctx,grade(r[1]),836,868,830,false,.6);
+      drawFig(ctx,grade(r[1]),832,912,815,false,.6);
     }).catch(function(){});
   }
 }
+function capHtml(p){
+  return '<span>'+esc(p.name)+'</span><small>'+esc(p.fam)+' · '+(pidx(p.id)+1)+' de '+products.length+'</small>';
+}
 function setMedia(){
-  var p=byId(S.pid);
-  if(S.mode==='video'&&!p.video)S.mode='foto';
-  var key=p.id+'|'+S.mode;
-  var isG=S.mode==='grupo',isV=S.mode==='video';
-  photo.hidden=S.mode!=='foto';vid.hidden=!isV;vctl.hidden=!isV;grp.hidden=!isG;
-  frame.classList.toggle('group',isG);frame.classList.toggle('scrub',isV);
-  hint.hidden=isG;
-  if(!isV)vid.pause();
-  if(isG){renderGroup();}
-  if(key!==mediaKey){
-    mediaKey=key;frame.classList.remove('zoom');
-    photo.src=p.photo;photo.alt='Modelo vestindo o terno '+p.name;
-    if(isV){vid.poster=p.photo;vid.src=p.video;try{vid.currentTime=0;}catch(e){}play(vid);}
-  }
-  hint.textContent=isV?'Arraste para avançar ou voltar o vídeo':(frame.classList.contains('zoom')?'Toque para voltar':'Toque para ampliar o tecido');
+  var p=byId(S.pid),isG=S.mode==='grupo',isV=S.mode==='video';
+  vw.hidden=isG;gw.hidden=!isG;
   ['foto','video','grupo'].forEach(function(m){$('#m-'+m).setAttribute('aria-pressed',String(S.mode===m));});
-  var mv=$('#m-video');mv.disabled=!p.video;mv.textContent=p.video?'Vídeo':'Vídeo em breve';
-  $('#btn-group').textContent=isG?'Ver o terno sozinho':'Ver noivo + padrinhos';
-  var pb=$('#padbox');pb.hidden=!isG;
-  if(isG){
+  if(!isG){
+    var useVid=isV&&!!p.video;
+    photo.hidden=useVid;vid.hidden=!useVid;
+    var key=p.id+'|'+(useVid?'v':'f');
+    if(!useVid)vid.pause();
+    if(key!==mediaKey){
+      mediaKey=key;vw.classList.remove('zoom');
+      bd.src=p.photo;photo.src=p.photo;photo.alt='Modelo vestindo o terno '+p.name;
+      if(useVid){vid.poster=p.photo;vid.src=p.video;try{vid.currentTime=0;}catch(e){}play(vid);}
+    }else if(useVid&&vid.paused){play(vid);}
+    cap.innerHTML=(isV&&!p.video?'<em>Vídeo em breve</em>':'');cap.hidden=!cap.innerHTML;
+  }else{
+    mediaKey='';vid.pause();
+    renderGroup();
     ensurePad();
-    $('#padpick').innerHTML=padList().map(function(q){return '<button class="thumb sm" data-act="padpid" data-pid="'+q.id+'" aria-pressed="'+(q.id===S.pad)+'" aria-label="Padrinhos com o terno '+esc(q.name)+'"><span class="timg"><img src="'+q.photo+'" alt="" loading="lazy"></span><span class="tname">'+esc(q.name)+'</span></button>';}).join('');
+    $('#padpick').innerHTML=padList().map(function(q){return '<button class="thumb sm" data-act="padpid" data-pid="'+q.id+'" aria-pressed="'+(q.id===S.pad)+'" aria-label="Padrinhos com o terno '+esc(padLabel(q))+'"><span class="timg"><img src="'+q.photo+'" alt="" loading="lazy"></span></button>';}).join('');
+    var rl=$('#rail'),rst=rl.scrollTop;
+    rl.innerHTML=products.map(function(q){return '<button class="thumb" data-act="pid" data-pid="'+q.id+'" title="'+esc(q.name)+'" aria-pressed="'+(q.id===S.pid)+'" aria-label="'+esc(q.name)+'"><span class="timg"><img src="'+q.photo+'" alt="" loading="lazy"></span></button>';}).join('');
+    rl.scrollTop=rst;
+    $('#title').textContent='Noivo + padrinhos';
   }
 }
 function renderShop(){
-  if(!products.length){$('#title').textContent='Sem ternos';return;}
-  var p=byId(S.pid);
+  if(!products.length)return;
   setMedia();
-  var rl=$('#rail'),rst=rl.scrollTop;
-  rl.innerHTML=products.map(function(q){
-    return '<button class="thumb" data-act="pid" data-pid="'+q.id+'" title="'+esc(q.name)+'" aria-pressed="'+(q.id===S.pid)+'" aria-label="'+esc(q.name)+'"><span class="timg"><img src="'+q.photo+'" alt="" loading="lazy"></span></button>';
-  }).join('');
-  rl.scrollTop=rst;
-  $('#eyebrow').textContent=S.mode==='grupo'?'Noivo e padrinhos':'Locação e venda de trajes';
-  $('#title').innerHTML=(S.mode==='grupo'?'Noivo<em>'+esc(p.name)+'</em>':'Terno<em>'+esc(p.name)+'</em>');
-  $('#sub').textContent=S.mode==='grupo'?'Veja como o noivo e os padrinhos ficam juntos na mesma foto.':p.desc+' Valores de locação e venda na loja.';
 }
-function syncVideoUI(){
-  var d=vid.duration||8;vrange.value=Math.round((vid.currentTime/d)*1000);
-  vtime.textContent=fmtTime(vid.currentTime)+' / '+fmtTime(d);
-  vplay.innerHTML=vid.paused?PLAY:PAUSE;vplay.setAttribute('aria-label',vid.paused?'Reproduzir vídeo':'Pausar vídeo');
+function step(d){
+  if(!products.length)return;
+  var n=products.length,i=(pidx(S.pid)+d+n)%n;S.pid=products[i].id;renderShop();
 }
-['timeupdate','play','pause','loadedmetadata'].forEach(function(ev){vid.addEventListener(ev,syncVideoUI);});
-vplay.addEventListener('click',function(){if(vid.paused)play(vid);else vid.pause();});
-vrange.addEventListener('input',function(){var d=vid.duration||8;vid.pause();vid.currentTime=(vrange.value/1000)*d;});
+/* toque na foto: amplia o tecido; deslizar de lado: troca o terno */
 var drag=null;
-frame.addEventListener('pointerdown',function(e){
-  if(e.target.closest('button,input'))return;
-  drag={x:e.clientX,t:vid.currentTime,was:!vid.paused,moved:false};
-  try{frame.setPointerCapture(e.pointerId);}catch(err){}
+vw.addEventListener('pointerdown',function(e){
+  if(e.target.closest('button'))return;
+  drag={x:e.clientX,y:e.clientY,t:Date.now()};
+  try{vw.setPointerCapture(e.pointerId);}catch(err){}
 });
-frame.addEventListener('pointermove',function(e){
-  if(S.mode==='foto'&&frame.classList.contains('zoom')){var r=frame.getBoundingClientRect();photo.style.transformOrigin=((e.clientX-r.left)/r.width*100)+'% '+((e.clientY-r.top)/r.height*100)+'%';}
-  if(!drag||S.mode!=='video')return;
-  var dx=e.clientX-drag.x;
-  if(Math.abs(dx)>6&&!drag.moved){drag.moved=true;vid.pause();}
-  if(drag.moved){var d=vid.duration||8,t=drag.t+dx/frame.clientWidth*d*1.4;t=((t%d)+d)%d;vid.currentTime=t;}
+vw.addEventListener('pointermove',function(e){
+  if(S.mode!=='grupo'&&vw.classList.contains('zoom')){var r=vw.getBoundingClientRect();photo.style.transformOrigin=((e.clientX-r.left)/r.width*100)+'% '+((e.clientY-r.top)/r.height*100)+'%';}
 });
-frame.addEventListener('pointerup',function(e){
+vw.addEventListener('pointerup',function(e){
   if(!drag)return;var d=drag;drag=null;
-  if(S.mode==='video'){if(!d.moved){if(vid.paused)play(vid);else vid.pause();}else if(d.was){play(vid);}}
-  else if(S.mode==='foto'){
-    var r=frame.getBoundingClientRect();photo.style.transformOrigin=((e.clientX-r.left)/r.width*100)+'% '+((e.clientY-r.top)/r.height*100)+'%';
-    frame.classList.toggle('zoom');
-    hint.textContent=frame.classList.contains('zoom')?'Toque para voltar':'Toque para ampliar o tecido';
+  var dx=e.clientX-d.x,dy=e.clientY-d.y;
+  if(Math.abs(dx)>70&&Math.abs(dx)>Math.abs(dy)*1.5){step(dx<0?1:-1);return;}
+  if(Math.abs(dx)<10&&Math.abs(dy)<10&&S.mode==='foto'){
+    var r=vw.getBoundingClientRect();photo.style.transformOrigin=((e.clientX-r.left)/r.width*100)+'% '+((e.clientY-r.top)/r.height*100)+'%';
+    vw.classList.toggle('zoom');
   }
 });
-frame.addEventListener('pointercancel',function(){drag=null;});
+vw.addEventListener('pointercancel',function(){drag=null;});
+vid.addEventListener('contextmenu',function(e){e.preventDefault();});
+vid.addEventListener('pause',function(){if(S.view==='shop'&&S.mode==='video'&&!vid.hidden&&!document.hidden){play(vid);}});
 
-/* ---------- comparar ---------- */
-var cmpBuilt=false,cmpEls=[];
-function buildCmp(){
-  if(cmpBuilt)return;cmpBuilt=true;
-  $('#cmp').innerHTML=[0,1].map(function(i){
-    return '<div class="ccol"><div class="frame"><img alt="" decoding="async"><video muted loop playsinline preload="metadata" hidden></video><span class="slotlab">TERNO '+(i?'B':'A')+'</span><span class="nov" hidden>Vídeo em breve para este terno</span></div><div class="cname"></div><div class="cpick" role="group"></div></div>';
-  }).join('');
-  cmpEls=$$('.ccol').map(function(c){return {img:$('img',c),vid:$('video',c),nov:$('.nov',c),name:$('.cname',c),pick:$('.cpick',c),key:''};});
-  cmpEls[0].vid.addEventListener('timeupdate',function(){var d=cmpEls[0].vid.duration||8;$('#crange').value=Math.round(cmpEls[0].vid.currentTime/d*1000);});
-}
-function ensureCmp(){
-  if(!byIdSafe(S.cmp[0]))S.cmp[0]=S.pid;
-  if(!byIdSafe(S.cmp[1])||S.cmp[1]===S.cmp[0]){var o=products.filter(function(p){return p.id!==S.cmp[0];})[0]||products[0];S.cmp[1]=o.id;}
-}
-function renderCompare(){
-  if(!products.length)return;
-  buildCmp();ensureCmp();
-  var vmode=S.cmode==='video';
-  $('#cm-foto').setAttribute('aria-pressed',String(!vmode));$('#cm-video').setAttribute('aria-pressed',String(vmode));
-  $('#cplay').hidden=!vmode;$('#crng').hidden=!vmode;
-  var rows=[[],[],[]];
-  S.cmp.forEach(function(pid,i){
-    var p=byId(pid),el=cmpEls[i];
-    var showVideo=vmode&&!!p.video;
-    el.img.hidden=showVideo;el.vid.hidden=!showVideo;el.nov.hidden=!(vmode&&!p.video);
-    var key=p.id+'|'+showVideo;
-    if(key!==el.key){el.key=key;el.img.src=p.photo;el.img.alt='Modelo vestindo o terno '+p.name;
-      if(showVideo){el.vid.poster=p.photo;el.vid.src=p.video;try{el.vid.currentTime=0;}catch(e){}
-        var other=cmpEls[1-i].vid;if(!other.hidden&&other.currentTime){try{el.vid.currentTime=other.currentTime;}catch(e){}}
-        if(S.cplaying)play(el.vid);}
-      else el.vid.pause();}
-    el.name.innerHTML='Terno <em>'+esc(p.name)+'</em>';
-    el.pick.setAttribute('aria-label','Cor, terno '+(i?'B':'A'));
-    el.pick.innerHTML=products.map(function(q){return '<button class="thumb sm" data-act="cpid" data-i="'+i+'" data-pid="'+q.id+'" aria-pressed="'+(q.id===pid)+'" aria-label="'+esc(q.name)+'"><span class="timg"><img src="'+q.photo+'" alt="" loading="lazy"></span></button>';}).join('');
-    rows[0].push(p.name);rows[1].push(p.pieces);rows[2].push(p.video?'Sim':'Em breve');
-  });
-  var labels=['Cor','Peças','Vídeo do modelo'];
-  $('#cmp-rows').innerHTML=labels.map(function(l,i){return '<tr><td>'+l+'</td><td>'+esc(rows[i][0])+'</td><td>'+esc(rows[i][1])+'</td></tr>';}).join('');
-  $('#cplay').textContent=S.cplaying?'Pausar os dois':'Reproduzir os dois';
-}
-$('#crange').addEventListener('input',function(){
-  S.cplaying=false;cmpEls.forEach(function(el){if(!el.vid.hidden){el.vid.pause();var d=el.vid.duration||8;el.vid.currentTime=($('#crange').value/1000)*d;}});
-  $('#cplay').textContent='Reproduzir os dois';
-});
-function cmpPlayState(){cmpEls.forEach(function(el){if(!el.vid.hidden){if(S.cplaying){try{el.vid.currentTime=cmpEls[0].vid.currentTime||el.vid.currentTime;}catch(e){}play(el.vid);}else el.vid.pause();}});}
 
 /* ---------- area da equipe ---------- */
 function renderStaff(){
@@ -430,15 +435,15 @@ function renderStaff(){
   var tabs='<div class="tabs" role="tablist"><button role="tab" data-act="stab" data-tab="modelos" aria-selected="'+(t==='modelos')+'">Modelos</button><button role="tab" data-act="stab" data-tab="novo" aria-selected="'+(t==='novo')+'">Adicionar modelo</button><button role="tab" data-act="stab" data-tab="seg" aria-selected="'+(t==='seg')+'">Segurança</button></div>';
   var body='';
   if(t==='modelos'){
-    body='<p class="note" style="margin-bottom:16px">Marque até '+MAXPAD+' modelos como opção de terno dos padrinhos. Selecionados: <b>'+padCount()+' de '+MAXPAD+'</b>.</p><div class="mlist">';
+    body='<p class="note" style="margin-bottom:16px">Escolha até '+MAXPAD+' ternos como opção para os padrinhos. Selecionados: <b>'+padCount()+' de '+MAXPAD+'</b>. Para trocar um, desmarque outro primeiro.</p><div class="mlist">';
     body+=products.map(function(p){
-      var dis=((!p.pad&&padCount()>=MAXPAD)||(!p.grp))?' disabled':'';
+      var dis=(!p.pad&&!(p.grp||p.cut))?' disabled':'';
       var conf=S.staff.confirm===p.id;
       return '<div class="mrow"><img src="'+p.photo+'" alt=""><span class="swatch" style="background:'+esc(p.hex)+'"></span><span class="nm">'+esc(p.name)+'<small>'+esc(p.pieces)+' · '+(p.video?'com vídeo':'sem vídeo')+' · '+(p.cut?'com recorte':'sem recorte')+'</small></span><label class="chk"><input type="checkbox" data-pad="1" data-pid="'+p.id+'"'+(p.pad?' checked':'')+dis+'>Opção para padrinhos</label><button class="mini'+(conf?' warn':'')+'" data-act="removemodel" data-pid="'+p.id+'">'+(conf?'Toque de novo para remover':'Remover')+'</button></div>';
     }).join('')+'</div>';
   }else if(t==='novo'){
     var full=padCount()>=MAXPAD;
-    body='<form class="form" id="f-new"><div class="box"><div class="field"><label class="label" for="n-nome">Nome da cor</label><input id="n-nome" required placeholder="Ex.: Bordô"></div><div class="row2"><div class="field"><label class="label" for="n-pecas">Peças</label><select id="n-pecas"><option>2 peças</option><option selected>3 peças</option></select></div><div class="field"><label class="label" for="n-hex">Cor de referência</label><input id="n-hex" type="color" value="#6e1423"></div></div><button class="cta" type="submit" id="n-save">Salvar e publicar no catálogo</button><div id="n-msg" role="status"></div></div><div class="box"><div class="field"><label class="label" for="n-foto">Foto do modelo</label><input id="n-foto" type="file" accept="image/*" required></div><div class="field"><label class="label" for="n-video">Vídeo do modelo (opcional)</label><input id="n-video" type="file" accept="video/*"></div><div class="field"><label class="label" for="n-cut">Foto recortada, fundo transparente (opcional)</label><input id="n-cut" type="file" accept="image/png,image/webp"><p class="note">Necessária para o modelo aparecer em noivo + padrinhos.</p></div><div class="preview"><div class="pv" id="pv-foto">Prévia da foto</div><div class="pv" id="pv-video">Prévia do vídeo</div></div></div></form>';
+    body='<form class="form" id="f-new"><div class="box"><div class="field"><label class="label" for="n-nome">Nome da cor</label><input id="n-nome" required placeholder="Ex.: Bordô"></div><div class="row2"><div class="field"><label class="label" for="n-pecas">Peças</label><select id="n-pecas"><option>2 peças</option><option selected>3 peças</option></select></div><div class="field"><label class="label" for="n-hex">Cor de referência</label><input id="n-hex" type="color" value="#6e1423"></div></div><label class="chk"><input type="checkbox" id="n-pad"'+(full?' disabled':'')+'>Também como opção para padrinhos'+(full?' (limite de '+MAXPAD+' atingido)':'')+'</label><button class="cta" type="submit" id="n-save">Salvar e publicar no catálogo</button><div id="n-msg" role="status"></div></div><div class="box"><div class="field"><label class="label" for="n-foto">Foto do modelo</label><input id="n-foto" type="file" accept="image/*" required></div><div class="field"><label class="label" for="n-video">Vídeo do modelo (opcional)</label><input id="n-video" type="file" accept="video/*"></div><div class="field"><label class="label" for="n-cut">Foto recortada, fundo transparente (opcional)</label><input id="n-cut" type="file" accept="image/png,image/webp"><p class="note">Necessária para o modelo aparecer em noivo + padrinhos.</p></div><div class="preview"><div class="pv" id="pv-foto">Prévia da foto</div><div class="pv" id="pv-video">Prévia do vídeo</div></div></div></form>';
   }else{
     body='<div class="form"><div class="box"><h3 class="sec">Modo quiosco</h3><p class="note" id="kstatus">Verificando…</p><div class="actions"><button class="cta" data-act="kon">Ativar bloqueio</button><button class="ghost" data-act="koff">Sair do modo quiosco</button></div><p class="note">Sair do quiosco libera os botões do tablet para manutenção. Ao abrir o app de novo, ele bloqueia outra vez.</p></div><div class="box"><h3 class="sec">PIN do administrador</h3><div class="actions"><button class="ghost" data-act="chpin">Trocar PIN</button></div><p class="note">Versão do app: '+esc(APP_VERSION)+'</p></div></div>';
   }
@@ -471,7 +476,7 @@ document.addEventListener('change',function(e){
   var t=e.target;
   if(t.matches&&t.matches('[data-pad]')){
     var id=t.dataset.pid,p=byId(id);
-    if(t.checked&&padCount()>=MAXPAD){t.checked=false;toast('Limite de '+MAXPAD+' modelos para padrinhos.');return;}
+    if(t.checked&&padCount()>=MAXPAD){t.checked=false;toast('Já são '+MAXPAD+' ternos de padrinhos. Desmarque um antes de marcar outro.');return;}
     if(!t.checked&&padCount()<=1){t.checked=true;toast('Deixe ao menos 1 modelo para os padrinhos.');return;}
     if(p.builtin){ST.over[id]=ST.over[id]||{};ST.over[id].pad=t.checked;}
     else{ST.custom.forEach(function(c){if(c.id===id)c.pad=t.checked;});}
@@ -483,17 +488,13 @@ document.addEventListener('change',function(e){
 
 /* ---------- acoes ---------- */
 var actions={
-  nav:function(b){S.view=b.dataset.view;if(S.view!=='staff')S.staff.on=false;renderAll();window.scrollTo(0,0);},
   logo:function(){logoTap();},
   pid:function(b){S.pid=b.dataset.pid;renderShop();},
-  pickcard:function(b){S.pid=b.dataset.pid;renderShop();window.scrollTo({top:0,behavior:'smooth'});},
+  fam:function(b){var f=b.dataset.fam,l=products.filter(function(q){return q.fam===f;});if(l.length){S.pid=l[0].id;renderShop();}},
+  prev:function(){step(-1);},
+  next:function(){step(1);},
   padpid:function(b){S.pad=b.dataset.pid;renderShop();},
   mode:function(b){S.mode=b.dataset.mode;renderShop();},
-  togroup:function(){S.mode=S.mode==='grupo'?'foto':'grupo';renderShop();},
-  addcmp:function(){S.cmp=[S.pid,null];S.view='compare';renderAll();window.scrollTo(0,0);},
-  cmode:function(b){S.cmode=b.dataset.mode;renderCompare();if(S.cmode==='video')setTimeout(cmpPlayState,60);},
-  cplay:function(){S.cplaying=!S.cplaying;cmpPlayState();$('#cplay').textContent=S.cplaying?'Pausar os dois':'Reproduzir os dois';},
-  cpid:function(b){S.cmp[+b.dataset.i]=b.dataset.pid;renderCompare();},
   pk:function(b){pinKey(b.dataset.k);},
   recok:function(){if(pinCtx&&pinCtx.recovery){var r=pinCtx.resolve;closeModal();r(true);}},
   txtok:function(){if(pinCtx&&pinCtx.text){var v=($('#txtin')||{}).value||'',r=pinCtx.resolve;closeModal();r(v);}},
@@ -515,7 +516,7 @@ var actions={
       var u=urls[id];if(u){['photo','video','cut'].forEach(function(k){if(u[k])try{URL.revokeObjectURL(u[k]);}catch(e){}});delete urls[id];}
       ['photo','video','cut'].forEach(function(k){idbDel(id+'|'+k);});
     }
-    S.cmp=[null,null];rebuildProducts();renderAll();toast('Modelo removido do catálogo.');
+    rebuildProducts();renderAll();toast('Modelo removido do catálogo.');
   }
 };
 document.addEventListener('click',function(e){
@@ -530,7 +531,7 @@ document.addEventListener('submit',function(e){
   var v=$('#n-video').files[0],ct=$('#n-cut').files[0],msg=$('#n-msg'),btn=$('#n-save');
   if(v&&v.size>300*1024*1024){msg.innerHTML='<div class="err">O vídeo passa de 300 MB. Use um vídeo menor.</div>';return;}
   btn.disabled=true;msg.innerHTML='<div class="okmsg">Salvando… aguarde.</div>';
-  var id='n'+(uidn++),wantPad=false,rec={id:id,name:name,pieces:$('#n-pecas').value,hex:$('#n-hex').value,pad:wantPad,hasVideo:!!v,hasCut:!!ct,desc:'Terno cadastrado pela equipe.'};
+  var id='n'+(uidn++),wantPad=$('#n-pad').checked&&padCount()<MAXPAD&&!!ct,rec={id:id,name:name,pieces:$('#n-pecas').value,hex:$('#n-hex').value,pad:wantPad,hasVideo:!!v,hasCut:!!ct,desc:'Terno cadastrado pela equipe.'};
   (async function(){
     try{
       var pb=await prepPhoto(f);await idbPut(id+'|photo',pb);
@@ -549,13 +550,12 @@ document.addEventListener('submit',function(e){
   })();
 });
 
-function renderNav(){['shop','compare'].forEach(function(v){var b=$('#nav-'+v);if(S.view===v)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current');});}
+
 function renderAll(){
-  $('#view-shop').hidden=S.view!=='shop';$('#view-compare').hidden=S.view!=='compare';$('#view-staff').hidden=S.view!=='staff';
+  $('#view-shop').hidden=S.view!=='shop';$('#view-staff').hidden=S.view!=='staff';
   document.body.classList.toggle('is-staff',S.view==='staff');
-  renderNav();
-  if(S.view==='shop'){renderShop();if(S.mode==='video')play(vid);}else{vid.pause();}
-  if(S.view==='compare'){renderCompare();if(S.cmode==='video')setTimeout(cmpPlayState,60);}else{cmpEls.forEach(function(el){el.vid.pause();});}
+  $('#modebar').hidden=S.view!=='shop';
+  if(S.view==='shop'){renderShop();}else{vid.pause();}
   if(S.view==='staff')renderStaff();
 }
 
@@ -565,7 +565,7 @@ function idleReset(){
   clearTimeout(idleT);
   idleT=setTimeout(function(){
     if(S.view==='staff'||!modal.hidden)return idleReset();
-    if(products.length&&(S.view!=='shop'||S.mode!=='foto'||S.pid!==products[0].id)){S.view='shop';S.mode='foto';S.pid=products[0].id;S.cmp=[null,null];frame.classList.remove('zoom');renderAll();window.scrollTo(0,0);}
+    if(products.length&&(S.view!=='shop'||S.mode!=='foto'||S.pid!==products[0].id)){S.view='shop';S.mode='foto';S.pid=products[0].id;vw.classList.remove('zoom');renderAll();window.scrollTo(0,0);}
     idleReset();
   },IDLE_MS);
 }

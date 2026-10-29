@@ -141,6 +141,8 @@ function disableKiosk(){if(!Kiosk)return Promise.resolve(null);return Kiosk.disa
 function kioskStatus(){if(!Kiosk)return Promise.resolve(null);return Kiosk.status().catch(function(){return null;});}
 
 /* ---------- catalogo ---------- */
+var ADS=[{id:'ad1',ad:true,photo:'media/ad-1.jpg'},{id:'ad2',ad:true,photo:'media/ad-2.jpg'},{id:'ad3',ad:true,photo:'media/ad-3.jpg'},{id:'ad4',ad:true,photo:'media/ad-4.jpg'},{id:'ad5',ad:true,photo:'media/ad-5.jpg'}];
+var AD_EVERY=8;
 var FAMS=["Branco", "Bege", "Amarelo", "Rosé", "Vinho", "Verde", "Petróleo", "Azul claro", "Azul médio", "Azul royal", "Azul-marinho", "Cinza claro", "Cinza", "Grafite", "Preto"];
 var BUILTIN=[
  {id:'01',num:1,name:"Verde-petróleo",fam:"Petróleo",hex:'#18414d',cut:'media/cut-01.webp',photo:'media/01.jpg',video:'media/01.mp4',pad:false},
@@ -158,12 +160,12 @@ var BUILTIN=[
  {id:'13',num:13,name:"Rosé-nude",fam:"Rosé",hex:'#af8d7c',cut:'media/cut-13.webp',photo:'media/13.jpg',video:'media/13.mp4',pad:false},
  {id:'14',num:14,name:"Rosé-nude claro",fam:"Rosé",hex:'#a68779',cut:'media/cut-14.webp',photo:'media/14.jpg',video:null,pad:false},
  {id:'15',num:15,name:"Preto com lapela de cetim",fam:"Preto",hex:'#13110f',cut:'media/cut-15.webp',photo:'media/15.jpg',video:'media/15.mp4',pad:false},
- {id:'16',num:16,name:"Preto clássico",fam:"Preto",hex:'#1a1816',cut:'media/cut-16.webp',photo:'media/16.jpg',video:'media/16.mp4',pad:true,padName:'Preto'},
+ {id:'16',num:16,name:"Preto clássico",fam:"Preto",hex:'#1a1816',cut:'media/cut-16.webp',photo:'media/16.jpg',video:'media/16.mp4',padimg:'media/pad-16.jpg',pad:true,padName:'Preto'},
  {id:'17',num:17,name:"Preto jacquard",fam:"Preto",hex:'#1c1a16',cut:'media/cut-17.webp',photo:'media/17.jpg',video:'media/17.mp4',pad:false},
  {id:'18',num:18,name:"Preto com brilhos",fam:"Preto",hex:'#151211',cut:'media/cut-18.webp',photo:'media/18.jpg',video:'media/18.mp4',pad:false},
  {id:'19',num:19,name:"Preto lapela de cetim",fam:"Preto",hex:'#171412',cut:'media/cut-19.webp',photo:'media/19.jpg',video:'media/19.mp4',pad:false},
  {id:'20',num:20,name:"Prata paisley",fam:"Cinza",hex:'#4d3e38',cut:'media/cut-20.webp',photo:'media/20.jpg',video:'media/20.mp4',pad:false},
- {id:'21',num:21,name:"Azul-marinho",fam:"Azul-marinho",hex:'#121a2d',cut:'media/cut-21.webp',photo:'media/21.jpg',video:'media/21.mp4',pad:true,padName:'Azul-marinho'},
+ {id:'21',num:21,name:"Azul-marinho",fam:"Azul-marinho",hex:'#121a2d',cut:'media/cut-21.webp',photo:'media/21.jpg',video:'media/21.mp4',padimg:'media/pad-21.jpg',pad:true,padName:'Azul-marinho'},
  {id:'22',num:22,name:"Azul-royal com lapela de cetim",fam:"Azul royal",hex:'#0f254d',cut:'media/cut-22.webp',photo:'media/22.jpg',video:'media/22.mp4',pad:false},
  {id:'23',num:23,name:"Azul-marinho gravata champanhe",fam:"Azul-marinho",hex:'#131929',cut:'media/cut-23.webp',photo:'media/23.jpg',video:'media/23.mp4',pad:false},
  {id:'24',num:24,name:"Marsala",fam:"Vinho",hex:'#552c2d',cut:'media/cut-24.webp',photo:'media/24.jpg',video:'media/24.mp4',pad:false},
@@ -173,7 +175,7 @@ var BUILTIN=[
  {id:'28',num:28,name:"Mostarda",fam:"Amarelo",hex:'#a3631b',cut:'media/cut-28.webp',photo:'media/28.jpg',video:'media/28.mp4',pad:false},
  {id:'29',num:29,name:"Azul-marinho gravata champanhe",fam:"Azul-marinho",hex:'#141a2b',cut:'media/cut-29.webp',photo:'media/29.jpg',video:'media/29.mp4',pad:false},
  {id:'30',num:30,name:"Azul-marinho trespassado",fam:"Azul-marinho",hex:'#161c2c',cut:'media/cut-30.webp',photo:'media/30.jpg',video:'media/30.mp4',pad:false},
- {id:'31',num:31,name:"Cinza-claro",fam:"Cinza claro",hex:'#807468',cut:'media/cut-31.webp',photo:'media/31.jpg',video:'media/31.mp4',pad:true,padName:'Cinza-claro'},
+ {id:'31',num:31,name:"Cinza-claro",fam:"Cinza claro",hex:'#807468',cut:'media/cut-31.webp',photo:'media/31.jpg',video:'media/31.mp4',padimg:'media/pad-31.jpg',pad:true,padName:'Cinza-claro'},
  {id:'32',num:32,name:"Cinza com colete prata",fam:"Cinza",hex:'#433834',cut:'media/cut-32.webp',photo:'media/32.jpg',video:'media/32.mp4',pad:false},
  {id:'33',num:33,name:"Grafite xadrez escuro",fam:"Grafite",hex:'#2e2b26',cut:'media/cut-33.webp',photo:'media/33.jpg',video:'media/33.mp4',pad:false},
  {id:'34',num:34,name:"Cinza-médio",fam:"Cinza",hex:'#3e3a3a',cut:'media/cut-34.webp',photo:'media/34.jpg',video:'media/34.mp4',pad:false},
@@ -189,10 +191,10 @@ var BUILTIN=[
  {id:'44',num:44,name:"Taupe claro",fam:"Bege",hex:'#988678',cut:'media/cut-44.webp',photo:'media/44.jpg',video:'media/44.mp4',pad:false},
  {id:'45',num:45,name:"Off-white linho",fam:"Branco",hex:'#b1a596',cut:'media/cut-45.webp',photo:'media/45.jpg',video:'media/45.mp4',pad:false},
  {id:'46',num:46,name:"Cinza com lapela de cetim",fam:"Cinza",hex:'#4d4540',cut:'media/cut-46.webp',photo:'media/46.jpg',video:'media/46.mp4',pad:false},
- {id:'47',num:47,name:"Grafite",fam:"Grafite",hex:'#35312d',cut:'media/cut-47.webp',photo:'media/47.jpg',video:'media/47.mp4',pad:true,padName:'Grafite'},
+ {id:'47',num:47,name:"Grafite",fam:"Grafite",hex:'#35312d',cut:'media/cut-47.webp',photo:'media/47.jpg',video:'media/47.mp4',padimg:'media/pad-47.jpg',pad:true,padName:'Grafite'},
  {id:'48',num:48,name:"Cinza-azulado",fam:"Cinza claro",hex:'#7e787b',cut:'media/cut-48.webp',photo:'media/48.jpg',video:'media/48.mp4',pad:false},
  {id:'49',num:49,name:"Azul-celeste botões azuis",fam:"Azul claro",hex:'#909fa6',cut:'media/cut-49.webp',photo:'media/49.jpg',video:'media/49.mp4',pad:false},
- {id:'50',num:50,name:"Areia",fam:"Bege",hex:'#baa188',cut:'media/cut-50.webp',photo:'media/50.jpg',video:'media/50.mp4',pad:true,padName:'Bege'},
+ {id:'50',num:50,name:"Areia",fam:"Bege",hex:'#baa188',cut:'media/cut-50.webp',photo:'media/50.jpg',video:'media/50.mp4',padimg:'media/pad-50.jpg',pad:true,padName:'Bege'},
  {id:'51',num:51,name:"Azul-marinho escuro",fam:"Azul-marinho",hex:'#151a29',cut:'media/cut-51.webp',photo:'media/51.jpg',video:'media/51.mp4',pad:false},
  {id:'52',num:52,name:"Azul-petróleo",fam:"Petróleo",hex:'#212d36',cut:'media/cut-52.webp',photo:'media/52.jpg',video:'media/52.mp4',pad:false},
  {id:'53',num:53,name:"Azul paisley com lapela preta",fam:"Azul médio",hex:'#222735',cut:'media/cut-53.webp',photo:'media/53.jpg',video:'media/53.mp4',pad:false},
@@ -211,22 +213,27 @@ var BUILTIN=[
 ];
 
 var urls={};
-var products=[];
+var products=[],seq=[];
+function isAd(id){return /^ad[0-9]+$/.test(String(id));}
+function buildSeq(){seq=[];var ai=0;products.forEach(function(p,i){if(i%AD_EVERY===0&&ai<ADS.length)seq.push(ADS[ai++]);seq.push(p);});if(!seq.length)seq=ADS.slice();}
+function seqItem(id){for(var i=0;i<seq.length;i++){if(seq[i].id===id)return seq[i];}return seq[0];}
+function seqIdx(id){for(var i=0;i<seq.length;i++){if(seq[i].id===id)return i;}return 0;}
+function suitAfter(id){for(var i=seqIdx(id);i<seq.length;i++){if(!seq[i].ad)return seq[i].id;}return products.length?products[0].id:id;}
 function famIdx(f){var i=FAMS.indexOf(f);return i<0?99:i;}
 function rebuildProducts(){
   var l=[];
   BUILTIN.forEach(function(b){
     var o=ST.over[b.id]||{};if(o.removed)return;
-    l.push({id:b.id,num:b.num,name:b.name,fam:b.fam,pieces:'3 peças',desc:'',hex:b.hex,photo:b.photo,video:b.video,cut:b.cut,padName:b.padName||null,pad:o.pad===undefined?b.pad:!!o.pad,builtin:true});
+    l.push({id:b.id,num:b.num,name:b.name,fam:b.fam,pieces:'3 peças',desc:'',hex:b.hex,photo:b.photo,video:b.video,cut:b.cut,padName:b.padName||null,padimg:b.padimg||null,pad:o.pad===undefined?b.pad:!!o.pad,builtin:true});
   });
   l.sort(function(a,b){return famIdx(a.fam)-famIdx(b.fam)||lum(b.hex)-lum(a.hex)||a.num-b.num;});
   ST.custom.forEach(function(c){
     var u=urls[c.id];if(!u||!u.photo)return;
     l.push({id:c.id,num:900,name:c.name,fam:'Novos',pieces:c.pieces,desc:c.desc||'',hex:c.hex,photo:u.photo,video:u.video||null,cut:u.cut||null,padName:null,pad:!!c.pad,builtin:false});
   });
-  products=l;
+  products=l;buildSeq();
   if(!products.length)return;
-  if(!byIdSafe(S.pid))S.pid=products[0].id;
+  if(!byIdSafe(S.pid)&&!isAd(S.pid))S.pid=seq[0].id;
   var pl=padList();if(pl.length&&!pl.some(function(p){return p.id===S.pad;}))S.pad=pl[0].id;
 }
 function byIdSafe(id){for(var i=0;i<products.length;i++){if(products[i].id===id)return products[i];}return null;}
@@ -248,7 +255,7 @@ async function loadCustomMedia(){
   }
 }
 
-var S={view:'shop',pid:'01',pad:'21',mode:'foto',staff:{on:false,tab:'modelos',confirm:null,msg:''}};
+var S={view:'shop',pid:'ad1',pad:'21',mode:'foto',staff:{on:false,tab:'modelos',confirm:null,msg:''}};
 var vw=$('#vw'),photo=$('#photo'),bd=$('#bd'),vid=$('#vid'),cap=$('#cap'),gw=$('#gw'),grp=$('#grp');
 var toastT=null;
 function toast(msg){var t=$('#toast');t.textContent=msg;t.hidden=false;clearTimeout(toastT);toastT=setTimeout(function(){t.hidden=true;},4200);}
@@ -330,6 +337,7 @@ function padSource(){
 }
 function padImage(pp){
   if(padCache[pp.id])return padCache[pp.id];
+  if(pp.padimg){padCache[pp.id]=loadImg(pp.padimg).catch(function(){delete padCache[pp.id];pp.padimg=null;return padImage(pp);});return padCache[pp.id];}
   padCache[pp.id]=Promise.all([padSource(),loadImg(pp.cut)]).then(function(r){
     var s=r[0],t=cutLab(r[1]),k=Math.min(1.7,Math.max(0.7,t.sd/s.sd*1.15));
     var c=document.createElement('canvas');c.width=s.w;c.height=s.h;var x=c.getContext('2d');
@@ -361,14 +369,16 @@ function renderGroup(){
       if(tok!==grpToken)return;
       ctx.drawImage(r[0],0,0,1672,941);
       drawFig(ctx,grade(r[1]),832,912,815,false,.6);
-    }).catch(function(){});
+    }).catch(function(e){if(tok!==grpToken)return;grp.innerHTML='<p class="gmsg">Não foi possível montar a foto. Verifique se as imagens do grupo (media/pad-*.jpg) e os recortes (media/cut-*.webp) foram enviados.</p>';});
   }
 }
 function capHtml(p){
   return '<span>'+esc(p.name)+'</span><small>'+esc(p.fam)+' · '+(pidx(p.id)+1)+' de '+products.length+'</small>';
 }
 function setMedia(){
-  var p=byId(S.pid),isG=S.mode==='grupo',isV=S.mode==='video';
+  var isG=S.mode==='grupo',isV=S.mode==='video';
+  if(isG&&isAd(S.pid))S.pid=suitAfter(S.pid);
+  var p=isG?byId(S.pid):seqItem(S.pid);
   vw.hidden=isG;gw.hidden=!isG;
   ['foto','video','grupo'].forEach(function(m){$('#m-'+m).setAttribute('aria-pressed',String(S.mode===m));});
   if(!isG){
@@ -378,10 +388,10 @@ function setMedia(){
     if(!useVid)vid.pause();
     if(key!==mediaKey){
       mediaKey=key;vw.classList.remove('zoom');
-      bd.src=p.photo;photo.src=p.photo;photo.alt='Modelo vestindo o terno '+p.name;
+      bd.src=p.photo;photo.src=p.photo;photo.alt=p.ad?'Brasil Homens':'Modelo vestindo o terno '+p.name;
       if(useVid){vid.poster=p.photo;vid.src=p.video;try{vid.currentTime=0;}catch(e){}play(vid);}
     }else if(useVid&&vid.paused){play(vid);}
-    cap.innerHTML=(isV&&!p.video?'<em>Vídeo em breve</em>':'');cap.hidden=!cap.innerHTML;
+    cap.innerHTML=(isV&&!p.ad&&!p.video?'<em>Vídeo em breve</em>':'');cap.hidden=!cap.innerHTML;
   }else{
     mediaKey='';vid.pause();
     renderGroup();
@@ -399,7 +409,7 @@ function renderShop(){
 }
 function step(d){
   if(!products.length)return;
-  var n=products.length,i=(pidx(S.pid)+d+n)%n;S.pid=products[i].id;renderShop();
+  var n=seq.length,i=(seqIdx(S.pid)+d+n)%n;S.pid=seq[i].id;renderShop();
 }
 /* toque na foto: amplia o tecido; deslizar de lado: troca o terno */
 var drag=null;
@@ -565,7 +575,7 @@ function idleReset(){
   clearTimeout(idleT);
   idleT=setTimeout(function(){
     if(S.view==='staff'||!modal.hidden)return idleReset();
-    if(products.length&&(S.view!=='shop'||S.mode!=='foto'||S.pid!==products[0].id)){S.view='shop';S.mode='foto';S.pid=products[0].id;vw.classList.remove('zoom');renderAll();window.scrollTo(0,0);}
+    if(products.length&&(S.view!=='shop'||S.mode!=='foto'||S.pid!==seq[0].id)){S.view='shop';S.mode='foto';S.pid=seq[0].id;vw.classList.remove('zoom');renderAll();window.scrollTo(0,0);}
     idleReset();
   },IDLE_MS);
 }

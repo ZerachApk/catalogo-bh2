@@ -267,7 +267,7 @@ function ensurePad(){var l=padList();if(!l.length)return null;if(!l.some(functio
 var imgCache={},grpToken=0;
 function loadImg(src){
   if(imgCache[src])return imgCache[src];
-  imgCache[src]=new Promise(function(res,rej){var i=new Image();i.onload=function(){res(i);};i.onerror=function(){delete imgCache[src];rej(new Error('img'));};i.src=src;});
+  imgCache[src]=new Promise(function(res,rej){var i=new Image();i.onload=function(){res(i);};i.onerror=function(){delete imgCache[src];rej(new Error(src));};i.src=src;});
   return imgCache[src];
 }
 function flipped(img){var c=document.createElement('canvas');c.width=img.width;c.height=img.height;var x=c.getContext('2d');x.translate(img.width,0);x.scale(-1,1);x.drawImage(img,0,0);return c;}
@@ -369,7 +369,7 @@ function renderGroup(){
       if(tok!==grpToken)return;
       ctx.drawImage(r[0],0,0,1672,941);
       drawFig(ctx,grade(r[1]),832,912,815,false,.6);
-    }).catch(function(e){if(tok!==grpToken)return;grp.innerHTML='<p class="gmsg">Não foi possível montar a foto. Verifique se as imagens do grupo (media/pad-*.jpg) e os recortes (media/cut-*.webp) foram enviados.</p>';});
+    }).catch(function(e){if(tok!==grpToken)return;grp.innerHTML='<p class="gmsg">Não foi possível montar a foto.<br>Arquivo que falhou: <b>'+esc(String(e&&e.message||e))+'</b><br>Envie esse arquivo para a pasta www/media do GitHub e gere o APK de novo.</p>';});
   }
 }
 function capHtml(p){
